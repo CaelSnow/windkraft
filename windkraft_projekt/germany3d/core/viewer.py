@@ -51,7 +51,7 @@ from ..hardware import get_capabilities, HardwareCapabilities
 START_YEAR = 1990          # Startjahr der Animation
 END_YEAR = 2025            # Endjahr der Animation
 YEAR_STEP = 5              # Schrittweite (Jahre)
-ANIMATION_SPEED = 5.0      # Sekunden pro Jahr-Schritt (schneller!)
+ANIMATION_SPEED = 1.5      # Sekunden pro Jahr-Schritt (REDUZIERT von 5.0)
 SHADOW_THRESHOLD = 30000   # Schatten nur wenn weniger als 30000 Windraeder
 # =============================================================================
 
@@ -59,19 +59,37 @@ SHADOW_THRESHOLD = 30000   # Schatten nur wenn weniger als 30000 Windraeder
 class Germany3DViewer:
     """Interaktiver 3D-Viewer fuer Deutschland mit Windkraft-Animation."""
     
-    def __init__(self):
-        """Initialisiert den Viewer."""
+    def __init__(self, shading_mode: str = 'gouraud'):
+        """
+        Initialisiert den Viewer.
+        
+        Args:
+            shading_mode: 'gouraud' (Fixed-Function) oder 'phong' (GLSL per-pixel)
+        """
         self.width = WINDOW_WIDTH
         self.height = WINDOW_HEIGHT
+        self.shading_mode = shading_mode
         
         # Pygame und OpenGL initialisieren ZUERST
         self._init_pygame()
         init_opengl()  # OpenGL-Kontext muss vor Hardware-Erkennung existieren!
         setup_projection(self.width, self.height)
         
+        # Phong-Shader initialisieren wenn angefordert
+        self.phong_shader = None
+        self._init_shading()
+        
         # Hardware-Erkennung (nutzt den existierenden OpenGL-Kontext)
         self.capabilities: HardwareCapabilities = get_capabilities()
         self.capabilities.print_summary()
+        
+        # Shading-Modus Info ausgeben
+        if self.shading_mode == 'phong' and self.phong_shader:
+            print(f"\n  🎨 Shading-Modus: PHONG (Per-Pixel GLSL)")
+        else:
+            print(f"\n  🎨 Shading-Modus: GOURAUD (Fixed-Function)")
+            if self.shading_mode == 'phong':
+                print(f"      ⚠ Phong nicht verfügbar, Fallback zu Gouraud")
         
         # Kamera
         self.camera = Camera()
@@ -113,6 +131,36 @@ class Germany3DViewer:
             (self.width, self.height),
             DOUBLEBUF | OPENGL | RESIZABLE
         )
+    
+    def _init_shading(self):
+        """
+        Initialisiert den gewünschten Shading-Modus.
+        
+        Gouraud (Standard): OpenGL Fixed-Function Pipeline
+            - Beleuchtung pro Vertex, dann interpoliert
+            - Schneller, weniger genau bei wenigen Vertices
+            
+        Phong: GLSL Shader für per-Pixel Beleuchtung
+            - Normalen werden interpoliert, Beleuchtung pro Pixel
+            - Bessere Qualität, besonders bei spekularen Highlights
+        """
+        if self.shading_mode == 'phong':
+            try:
+                from ..rendering.shaders import check_shader_support, get_phong_shader
+                
+                if check_shader_support():
+                    self.phong_shader = get_phong_shader()
+                    if self.phong_shader:
+                        # Shader erfolgreich initialisiert
+                        return
+                
+                # Fallback zu Gouraud wenn Shader nicht verfügbar
+                print("  ⚠ Phong-Shader nicht verfügbar, verwende Gouraud")
+                self.shading_mode = 'gouraud'
+                
+            except ImportError as e:
+                print(f"  ⚠ Shader-Module nicht verfügbar: {e}")
+                self.shading_mode = 'gouraud'
     
     def _load_data(self):
         """Laedt alle Daten."""

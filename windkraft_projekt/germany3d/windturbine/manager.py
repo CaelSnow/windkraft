@@ -131,6 +131,8 @@ class WindTurbineManager:
         """
         Gibt alle Turbinen bis zum angegebenen Jahr zurueck.
         Verwendet Cache fuer schnellen Zugriff.
+        
+        WICHTIG: Filtert Turbinen ohne gültiges Bundesland (außerhalb Deutschlands)
         """
         if not self._cache_valid:
             self.build_year_cache()
@@ -138,18 +140,25 @@ class WindTurbineManager:
         result = []
         for year in sorted(self._year_cache.keys()):
             if year <= max_year:
-                result.extend(self._year_cache[year])
+                for t in self._year_cache[year]:
+                    # Nur Turbinen MIT gültigem Bundesland anzeigen
+                    bl_name = getattr(t, 'bl_name', None)
+                    if bl_name and bl_name != 'Unknown':
+                        result.append(t)
         return result
     
     def count_until_year(self, max_year: int) -> int:
-        """Zaehlt Turbinen bis zum angegebenen Jahr."""
+        """Zaehlt Turbinen bis zum angegebenen Jahr (nur mit gültigem Bundesland)."""
         if not self._cache_valid:
             self.build_year_cache()
         
         count = 0
         for year in self._year_cache.keys():
             if year <= max_year:
-                count += len(self._year_cache[year])
+                for t in self._year_cache[year]:
+                    bl_name = getattr(t, 'bl_name', None)
+                    if bl_name and bl_name != 'Unknown':
+                        count += 1
         return count
     
     # ========================================

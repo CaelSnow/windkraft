@@ -91,24 +91,28 @@ class SpatialGrid:
     
     def get_bundesland_with_fallback(self, x: float, z: float) -> str:
         """
-        Mit Nearest-Neighbor Fallback.
+        Sucht Bundesland mit kleinem Fallback-Radius.
+        
+        Returns:
+            Bundesland-Name oder None wenn außerhalb Deutschlands
         """
         bl_name = self.get_bundesland(x, z)
         
         if bl_name:
             return bl_name
         
-        # Fallback: Suche in benachbarten Zellen
+        # Fallback: Suche NUR in direkten Nachbarzellen (1 Pixel Toleranz)
+        # Dies erlaubt Windräder direkt an Grenzen, aber nicht weit außerhalb
         i = int((x - self.x_min) / (self.x_max - self.x_min) * self.grid_size)
         j = int((z - self.z_min) / (self.z_max - self.z_min) * self.grid_size)
         
-        # Suche in 3x3 Nachbarschaft
-        for di in [-1, 0, 1]:
-            for dj in [-1, 0, 1]:
-                ni, nj = i + di, j + dj
-                if 0 <= ni < self.grid_size and 0 <= nj < self.grid_size:
-                    bl_name = self.grid.get((ni, nj))
-                    if bl_name:
-                        return bl_name
+        # Nur direkte Nachbarn (nicht diagonal)
+        for di, dj in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            ni, nj = i + di, j + dj
+            if 0 <= ni < self.grid_size and 0 <= nj < self.grid_size:
+                bl_name = self.grid.get((ni, nj))
+                if bl_name:
+                    return bl_name
         
-        return 'Unknown'
+        # Außerhalb Deutschlands - None zurückgeben (wird nicht angezeigt)
+        return None

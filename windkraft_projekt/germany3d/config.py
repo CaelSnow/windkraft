@@ -104,15 +104,15 @@ DEFAULT_HEIGHT = 0.14
 # =============================================================================
 CAMERA_ROT_X = 45.0      # Viewing angle (degrees)
 CAMERA_ROT_Y = 25.0      # Rotation (degrees)
-CAMERA_ZOOM = 2.4        # Zoom level
+CAMERA_ZOOM = 3.8        # Zoom level (erhöht für Gesamtansicht)
 CAMERA_MIN_ZOOM = 1.5
-CAMERA_MAX_ZOOM = 5.0
+CAMERA_MAX_ZOOM = 6.0
 
 # =============================================================================
 # RENDERING
 # =============================================================================
 BACKGROUND_COLOR = (0.93, 0.92, 0.90, 1.0)  # Light gray
-POLYGON_SIMPLIFICATION = 750  # Max vertices per polygon (hoeher = genauer, aber langsamer)
+POLYGON_SIMPLIFICATION = 1000  # Max vertices per polygon (hoeher = genauer, aber langsamer)
                                # 200 = schnell, aber ungenau bei kleinen Bundeslaendern
                                # 500 = guter Kompromiss fuer Hamburg-Loch
                                # 1000 = sehr genau

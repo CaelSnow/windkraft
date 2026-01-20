@@ -183,7 +183,10 @@ def get_height_for_position(x: float, z: float, bundeslaender: list) -> float:
 def get_bundesland_name_for_position(x: float, z: float, bundeslaender: list) -> str:
     """
     Ermittelt den Namen des Bundeslandes an Position (x, z).
-    WICHTIG: Prueft Stadtstaaten ZUERST, dann Nearest-Neighbor Fallback.
+    WICHTIG: Prueft Stadtstaaten ZUERST.
+    
+    Returns:
+        Bundesland-Name oder None wenn außerhalb Deutschlands
     """
     # Stadtstaaten haben Prioritaet - sie werden zuerst geprueft
     CITY_STATES = {'Berlin', 'Hamburg', 'Bremen'}
@@ -212,8 +215,8 @@ def get_bundesland_name_for_position(x: float, z: float, bundeslaender: list) ->
         if point_in_polygon(x, z, bl.vertices_top):
             return bl.name
     
-    # FALLBACK: Finde naechstes Bundesland (fuer Windraeder nahe Grenzen)
-    return _find_nearest_bundesland(x, z, bundeslaender)
+    # KEIN FALLBACK mehr - Punkt liegt außerhalb Deutschlands
+    return None
 
 
 def _find_nearest_bundesland(x: float, z: float, bundeslaender: list) -> str:

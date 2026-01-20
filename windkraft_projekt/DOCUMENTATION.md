@@ -1307,3 +1307,96 @@ Die Implementierung zeigt Best Practices in:
 - Fehlerbehandlung & Robustheit
 - Benutzerfreundliche Interfaces
 
+---
+
+## Shading-Modi
+
+### Gouraud Shading (Standard)
+
+```bash
+python main.py  # oder explizit:
+python main.py --shading gouraud
+```
+
+**Implementierung:** OpenGL Fixed-Function Pipeline
+
+**Funktionsweise:**
+1. Beleuchtung wird pro Vertex berechnet (Phong-Modell)
+2. Berechnete Farben werden über die Fläche interpoliert
+3. Ergebnis: Sanfte Farbübergänge, aber mögliche Artefakte bei wenigen Vertices
+
+**Konfiguration:** `germany3d/rendering/opengl_utils.py`
+- `init_opengl()`: Initialisiert Gouraud mit `GL_SMOOTH`
+- `update_lighting()`: Konfiguriert die zwei Lichtquellen
+
+### Phong Shading (GLSL)
+
+```bash
+python main.py --shading phong
+```
+
+**Implementierung:** GLSL Shader (Version 3.30)
+
+**Funktionsweise:**
+1. Normalen werden über die Fläche interpoliert
+2. Beleuchtung wird pro Pixel berechnet
+3. Ergebnis: Präzisere Highlights, bessere Qualität
+
+**Shader-Code:** `germany3d/rendering/shaders.py`
+- `PHONG_VERTEX_SHADER`: Berechnet Fragment-Position und Normal
+- `PHONG_FRAGMENT_SHADER`: Berechnet Phong-Beleuchtung pro Pixel
+
+**Voraussetzungen:**
+- OpenGL 3.3+
+- GLSL 3.30+
+
+---
+
+## Video-Export
+
+### Verwendung
+
+```bash
+python main.py --record                    # Standard (1080p, 30fps)
+python main.py --record --fps 60           # 60 FPS
+python main.py --record --resolution 4k    # 4K Video
+python main.py --record --quality lossless # Beste Qualität
+python main.py --record --speed 1.0        # Schnellere Animation
+```
+
+### Konfiguration anpassen
+
+**Datei:** `germany3d/video_export.py`
+
+**Klasse VideoConfig (Zeile ~35):**
+```python
+@dataclass
+class VideoConfig:
+    # Video-Einstellungen
+    fps: int = 30
+    width: int = 1920
+    height: int = 1080
+    quality: str = "high"
+    
+    # Animation
+    seconds_per_year: float = 2.0  # Dauer pro Jahr
+    
+    # Kamera-Bewegung
+    rotation_speed: float = 15.0   # Grad/Jahr
+    initial_rotation_x: float = 45.0
+    zoom_level: float = 2.4
+```
+
+### ffmpeg
+
+Das Video-System verwendet `imageio-ffmpeg` für plattformübergreifende Kompatibilität.
+Die ffmpeg-Executable wird automatisch gefunden.
+
+**Qualitätsstufen:**
+| Stufe | CRF | Verwendung |
+|-------|-----|------------|
+| low | 28 | Vorschau |
+| medium | 23 | Web |
+| high | 18 | Präsentation |
+| lossless | 0 | Archiv |
+
