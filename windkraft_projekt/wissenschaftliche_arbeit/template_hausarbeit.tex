@@ -1,0 +1,440 @@
+\documentclass[12pt]{article}
+
+%% Language and font encodings
+\usepackage[ngerman]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{fontspec}
+    \setmainfont{Times New Roman}
+\usepackage{titlesec}
+    \titleformat*{\section}{\normalfont\large\bfseries}
+    \titleformat*{\subsection}{\normalfont\normalsize\bfseries}
+    \titleformat*{\subsubsection}{\normalfont\normalsize}
+\renewcommand{\thesection}{\arabic{section}.} 
+\renewcommand{\thesubsection}{\thesection\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
+\usepackage{fancyhdr}
+    \lhead{}
+    \chead{}
+    \rhead{}
+    \rfoot{\thepage}
+    \cfoot{ }
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+    \pagestyle{fancy}
+
+%% Sets page size and margins
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=2.54cm,right=2.54cm,marginparwidth=1.75cm]{geometry}
+
+%% Useful packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{indentfirst}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[backend=biber,bibencoding=UTF8,style=ieee-alphabetic]{biblatex}
+\addbibresource{referenzen.bib}
+
+\begin{document}
+\begin{titlepage}
+    \thispagestyle{fancy}
+    {\centering
+
+    {\huge\bfseries Von Induction Heads zu Function Vectors: Eine mechanistische Analyse der Attention-Mechanismen im In-Context Learning\par}
+        \vspace{1.5cm}
+    {\Large Cabrell Valdice Teikeu Kana\par 772538\par}
+    \vspace{2cm}
+    {\large Hochschule Darmstadt \par
+    Informatik \par}
+    \vspace{1cm}
+    {\large Hauptseminar: Explainable bzw. Interpretable Künstliche Intelligenz
+    \par Betreuer: Prof. Dr. Ronald Moore
+    \par}
+    \vfill
+    {\large \today\par}}
+    \vfill
+\end{titlepage}
+
+% =============================================================================
+% EINLEITUNG
+% =============================================================================
+
+\section{Einleitung}\label{sec:einleitung}
+
+Wenn ein Sprachmodell wie GPT-4 aus wenigen Beispielen im Prompt eine neue Aufgabe lernt, ohne dass seine Parameter angepasst werden, stellt sich eine fundamentale Frage: Welche internen Mechanismen ermöglichen dieses In-Context Learning (ICL), wenn die Gewichte des Modells unverändert bleiben? Die mechanistische Interpretierbarkeit versucht, diese Frage durch detaillierte Analyse der internen Berechnungen zu beantworten.
+Bis 2022 schien die Antwort klar. Olsson et al. \cite{Ols_22} identifizierten sogenannte Induction Heads als zentralen Mechanismus: spezialisierte Attention-Köpfe, die Wiederholungsmuster in Sequenzen erkennen und entsprechende Fortsetzungen kopieren. Die Beobachtung, dass ihr Auftreten während des Trainings mit einem abrupten Anstieg der ICL-Fähigkeiten korreliert, etablierte Induction Heads als dominantes Erklärungsmodell. Die Hypothese war elegant: ICL funktioniert durch Mustererkennung und Kopieren.
+Neuere Forschung fordert dieses Narrativ heraus. Todd et al. \cite{TOD_24} identifizierten einen alternativen Mechanismus, sogenannte Function Vectors, die nicht Token kopieren, sondern abstrakte Aufgabenstrukturen kodieren und gelernte Funktionen aktivieren. Eine systematische Vergleichsstudie über 12 Modelle und 40 Aufgaben \cite{YS_25} zeigt, dass Function Vectors bei abstrakten Aufgaben wie Klassifikation oder logischem Schließen 60-80\% der ICL-Performance erklären, während Induction Heads nur 10-30\% beitragen. Diese Befunde wirft die zentrale Forschungsfrage dieser Arbeit auf:
+\begin{quote}
+\textit{Sind Induction Heads und Function Vectors unabhängige Mechanismen, oder existiert eine entwicklungsbezogene Verbindung, bei der Induction Heads als Vorläufer von Function Vectors fungieren?}
+\end{quote}
+Die Beantwortung dieser Frage erfordert eine kritische Analyse der empirischen Evidenz und der methodischen Ansätze, mit denen beide Mechanismen identifiziert wurden. Diese Arbeit untersucht die Beziehung zwischen Induction Heads und Function Vectors durch systematische Auswertung der verfügbaren Literatur und entwickelt eine Synthese der beobachteten Befunde.
+
+Die Arbeit gliedert sich wie folgt: Kapitel 2 führt die technischen Grundlagen ein. Kapitel 3 analysiert Induction Heads. Kapitel 4 stellt Function Vectors vor. Kapitel 5 integriert beide Perspektiven und entwickelt eine Synthese ihrer Beziehung. Kapitel 6 diskutiert methodische Limitationen der analysierten Studien sowie Implikationen für zukünftige Forschung.
+
+% =============================================================================
+% GRUNDLAGEN
+% =============================================================================
+
+\section{Grundlagen}\label{sec:grundlagen}
+
+\subsection{Transformer-Architektur und Self-Attention}\label{subsec:transformer}
+
+Die 2017 eingeführte Transformer-Architektur \cite{VSP_17} ersetzte rekurrente Netze durch einen rein attention-basierten Ansatz. Der entscheidende Vorteil liegt in der Parallelisierbarkeit: Während RNNs Token sequenziell verarbeiten müssen, berechnet der Transformer Beziehungen zwischen allen Token-Paaren simultan. Diese Effizienz ermöglichte das Training auf deutlich größeren Datensätzen und führte zur Entwicklung moderner Sprachmodelle \cite{FSBC_24}.
+
+Der Self-Attention-Mechanismus bildet das Herzstück der Architektur. Für eine Eingabesequenz von $n$ Token berechnet er eine gewichtete Kombination aller Token-Repräsentationen, wobei die Gewichte die Relevanz jedes Tokens für das aktuelle Token ausdrücken. Formal werden drei lineare Projektionen angewendet: Queries $Q = XW_Q$, Keys $K = XW_K$ und Values $V = XW_V$, wobei $X$ die Eingabematrix und $W_Q, W_K, W_V$ lernbare Gewichtsmatrizen sind \cite{VSP_17}. Die Attention-Gewichte ergeben sich aus:
+
+$$\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+
+Intuitiv berechnet diese Formel für jedes Token eine gewichtete Mischung aller anderen Token: $QK^T$ misst die Ähnlichkeit zwischen Queries und Keys, die Softmax-Funktion normalisiert diese Ähnlichkeiten zu Gewichten, und die Multiplikation mit $V$ überträgt entsprechend gewichtete Information. Die Skalierung durch $\sqrt{d_k}$ verhindert, dass bei hohen Dimensionen die Softmax-Funktion in Sättigungsbereiche gerät, in denen Gradienten verschwinden \cite{VSP_17}. Hinter dieser scheinbar einfachen Formel verbirgt sich eine komplexe Dynamik \cite{FSBC_24}: Die Query bestimmt, wonach ein Token sucht, der Key, welche Information ein Token anbietet, und der Value, welche Information tatsächlich übertragen wird.
+
+Abbildung~\ref{fig:attention_mechanism} illustriert diese Dynamik anhand eines konkreten Beispiels. Bei der Verarbeitung des Pronomens \textit{sie} im Satz \textit{Die Katze jagte die Maus, weil sie hungrig war} muss das Modell die Referenz auf \textit{Katze} auflösen. Der Query-Vektor von \textit{sie} kodiert die Suche nach einem geeigneten Bezugswort. Der Key-Vektor von \textit{Katze} signalisiert, dass dieses Token als Referent in Frage kommt. Die hohe Ähnlichkeit zwischen beiden führt zu einem starken Attention-Gewicht, wodurch semantische Information von \textit{Katze} zur Position von \textit{sie} übertragen wird.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/self_attention.png}
+    \caption{\label{fig:attention_mechanism} Visualisierung der Attention-Gewichte. Das Token „sie“ (Query) fokussiert stark auf „Katze“ (dunkelblau), um die Referenz aufzulösen.}
+\end{figure}
+
+Multi-Head Attention erweitert diesen Mechanismus durch parallele Attention-Berechnungen mit unterschiedlichen Projektionsmatrizen. Verschiedene Köpfe lernen dabei unterschiedliche Beziehungstypen: syntaktische Abhängigkeiten, semantische Ähnlichkeiten oder positionale Muster \cite{VSP_17}. Diese Spezialisierung ist fundamental für das Verständnis von Induction Heads und Function Vectors, da beide Mechanismen auf der selektiven Aktivität bestimmter Attention-Köpfe basieren.
+
+Ein alternativer Blick auf die Transformer-Architektur ist das Residual Stream-Konzept \cite{ENO_21}. Anstatt den Informationsfluss als sequenzielle Transformation durch Layer zu verstehen, betrachtet dieser Ansatz einen kontinuierlichen Informationskanal, in den alle Komponenten schreiben und aus dem sie lesen. Mathematisch beschreibt sich der Residual Stream als:
+
+$$x^{(l)} = x^{(l-1)} + \text{Attn}^{(l)}(x^{(l-1)}) + \text{MLP}^{(l)}(x^{(l-1)})$$
+
+Die Formel zeigt, dass jeder Layer nur einen Beitrag zum bestehenden Vektor \emph{addiert}, anstatt ihn zu ersetzen. Information fließt somit nicht sequentiell durch eine Kette, sondern akkumuliert sich in einem gemeinsamen Kanal. Diese additive Struktur hat eine wichtige Implikation, die als Superposition bezeichnet wird \cite{ENO_21}: Verschiedene Komponenten können Information in denselben Vektorraum schreiben, ohne sich gegenseitig zu überschreiben. Der Residual Stream fungiert als Kommunikationsmedium, über das Attention-Köpfe in frühen Layern Information für Köpfe in späteren Layern bereitstellen können.
+
+\subsection{In-Context Learning: Definition und Charakteristika}\label{subsec:icl}
+
+In-Context Learning (ICL) bezeichnet die Fähigkeit von Sprachmodellen, Aufgaben aus wenigen Beispielen im Eingabetext zu lösen, ohne Parameteranpassung \cite{Ols_22, MIN_22}. Diese Fähigkeit wurde erstmals systematisch für GPT-3 demonstriert \cite{CHA_22}, wobei zwischen Few-Shot Learning mit mehreren Beispielen und Zero-Shot Learning mit nur einer Aufgabenbeschreibung unterschieden wird.
+
+Ein konkretes Beispiel verdeutlicht den Mechanismus: Bei einem Prompt wie \textit{Englisch zu Deutsch: cat $\rightarrow$ Katze, dog $\rightarrow$ Hund, bird $\rightarrow$ ?} kann ein Sprachmodell \textit{Vogel} vorhersagen, obwohl die Gewichte seit dem Pretraining unverändert sind. Das Modell extrahiert aus den zwei Beispielen die Aufgabenstruktur und wendet sie auf die neue Eingabe an. Dieser Prozess findet vollständig während des Forward-Passes statt, ohne jegliches Gradientenupdate.
+
+Eine überraschende Einsicht in die Natur von ICL lieferten Experimente mit zufällig permutierten Labels \cite{MIN_22}: Selbst wenn beispielsweise \textit{positiv} auf negative Sätze gemappt wurde, behielten Modelle einen erheblichen Teil ihrer Performance. Dieses Ergebnis deutet darauf hin, dass ICL nicht primär die spezifischen Input-Output-Mappings lernt, sondern das Format und die Aufgabenstruktur. Die Frage, welcher Mechanismus diese Formatextraktion implementiert, motiviert die Analyse von Induction Heads und Function Vectors.
+
+\subsection{Mechanistische Interpretierbarkeit: Methoden und Konzepte}\label{subsec:mech_interp}
+
+Die mechanistische Interpretierbarkeit verfolgt das Ziel, die internen Berechnungen neuronaler Netze vollständig zu verstehen \cite{OCS_20, ENO_21}. Im Gegensatz zu Post-hoc-Methoden, die Modelle als Black Boxes behandeln und nur Input-Output-Beziehungen analysieren, untersucht dieser Ansatz die Funktion individueller Komponenten und deren Zusammenspiel.
+
+Zentral ist das Konzept des Circuits \cite{OCS_20}: Ein Circuit ist ein funktionaler Subgraph im Netzwerk, der eine spezifische Aufgabe implementiert. Analog zu elektronischen Schaltkreisen besteht ein Circuit aus mehreren Komponenten, die in definierter Weise zusammenwirken. Die Identifikation eines Circuits erfordert sowohl die Bestimmung der beteiligten Komponenten als auch das Verständnis ihrer kausalen Beziehungen.
+
+Das methodische Repertoire umfasst drei zentrale Techniken. 
+\begin{itemize}
+    \item Die Aktivierungsanalyse untersucht die Ausgaben einzelner Komponenten bei verschiedenen Eingaben. Durch den Vergleich von Aktivierungsmustern über viele Beispiele hinweg lassen sich Spezialisierungen identifizieren. Mit dieser Methode wurden beispielsweise 26 Attention-Köpfe identifiziert, die an der Indirect Object Identification beteiligt sind \cite{WVC_22}.
+    \item Ablation testet die Notwendigkeit einer Komponente durch ihre Deaktivierung. Wenn die Entfernung eines Attention-Kopfes die Performance einer Aufgabe stark reduziert, ist dieser Kopf kausal relevant. Durch systematische Ablation konnte gezeigt werden, dass das Entfernen von Induction Heads die ICL-Performance um 70-90\% reduziert \cite{Ols_22}.
+    \item Activation Patching, auch als Causal Mediation Analysis bezeichnet, ist die methodisch stärkste Technik \cite{WVC_22, TOD_24}. Sie ersetzt die Aktivierung einer Komponente in einem Durchlauf durch die Aktivierung aus einem anderen Durchlauf mit unterschiedlicher Eingabe. Wenn diese Ersetzung das Verhalten ändert, beweist dies einen kausalen Zusammenhang. Diese Methode wurde zur Identifikation von Function Vector-Köpfen eingesetzt und wird in Kapitel 4 detailliert behandelt.
+\end{itemize}
+
+% =============================================================================
+% INDUCTION HEADS
+% =============================================================================
+
+\section{Induction Heads: Der Kopier-Mechanismus}\label{sec:induction_heads}
+
+\subsection{Funktionsweise und der Zwei-Stufen-Circuit}\label{subsec:funktionsweise_induction}
+
+Induction Heads sind spezialisierte Attention-Mechanismen, die Wiederholungsmuster in Sequenzen erkennen und nutzen \cite{Ols_22}. Die grundlegende Operation lässt sich als Prefix Matching beschreiben: Gegeben eine Sequenz der Form \texttt{[A][B]...[A][B][?]}, erkennt der Induction Head, dass die Teilsequenz \texttt{[A][B]} bereits früher aufgetreten ist, und prognostiziert das Token, das ursprünglich auf diese Teilsequenz folgte. Diese Fähigkeit ist nicht trivial zu implementieren, da der Standard-Attention-Mechanismus nur direkte Token-zu-Token-Vergleiche erlaubt. Die Lösung ist ein zweistufiger Circuit, der die Inter-Layer-Kommunikation über den Residual Stream nutzt \cite{ENO_21}.
+
+Im ersten Layer operieren sogenannte Previous Token Heads. Diese Attention-Köpfe implementieren ein einfaches Muster: Der Attention-Kopf an Position $i$ fokussiert ausschließlich auf Position $i-1$ und kopiert Information über das dort stehende Token in den Residual Stream. Mathematisch lässt sich dies als Attention-Matrix beschreiben, deren Einträge $(i,j)$ nur dann von Null verschieden sind, wenn $j = i-1$ \cite{ENO_21}.
+
+Im zweiten Layer nutzen die eigentlichen Induction Heads die vorbereitete Information durch einen Mechanismus, der als K-Composition bezeichnet wird \cite{ENO_21}. Die Keys des Induction Heads werden nicht nur aus dem aktuellen Token, sondern auch aus dem Output des Previous Token Heads konstruiert:
+
+$$K_j = W_K \cdot \left(\text{embed}(t_j) + W_{OV}^{\text{prev}} \cdot \text{embed}(t_{j-1})\right)$$
+
+Der entscheidende Punkt dieser Formel: Der Key an Position $j$ kodiert nicht nur das aktuelle Token $t_j$, sondern durch die Addition auch das vorherige Token $t_{j-1}$. $W_{OV}^{\text{prev}}$ ist dabei die Output-Value-Matrix des Previous Token Heads. Damit kann der Induction Head nach Bigram-Mustern suchen, obwohl Attention normalerweise nur einzelne Token vergleicht. Der Query an der aktuellen Position kann nun nach Positionen suchen, deren Bigram $(t_{j-1}, t_j)$ mit dem eigenen Bigram übereinstimmt.
+
+Abbildung~\ref{fig:induction_circuit} zeigt den vollständigen Zwei-Stufen-Circuit. Das Zusammenspiel beider Komponenten ermöglicht die Induction-Operation: Der Previous Token Head reichert den Residual Stream mit Bigram-Information an, der Induction Head nutzt diese Information zur Identifikation wiederholter Muster.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/two_layer_induction.png}
+    \caption{\label{fig:induction_circuit} Der Zwei-Stufen-Circuit für Induction. Previous Token Heads in frühen Layern bereiten Bigram-Information vor, die Induction Heads in späteren Layern für Prefix Matching nutzen. \cite{ENO_21}.}
+\end{figure}
+
+Ein konkretes Beispiel illustriert den Ablauf: Bei der Sequenz \textit{cat dog bird cat dog [?]} steht an Position 6 (dem Fragezeichen) das vorherige Token \textit{dog}. Der Query-Vektor kodiert diese Information. Für jede frühere Position prüft der Attention-Mechanismus, ob der dortige Vorgänger ebenfalls \textit{dog} war. An Position 3 (\textit{bird}) ist der Vorgänger tatsächlich \textit{dog}. Die Attention fokussiert daher stark auf Position 3, und das dort stehende Token wird kopiert, wodurch das Modell \textit{bird} vorhersagt.
+
+\subsection{Empirische Evidenz: Die Phase Transition}\label{subsec:evidence_induction}
+
+Eine bemerkenswerte Entdeckung betrifft die Entstehung von ICL-Fähigkeiten während des Trainings \cite{Ols_22}. Anstatt graduell zu entstehen, zeigen Transformer einen abrupten, sprunghaften Anstieg ihrer In-Context Learning-Fähigkeiten. Dieses Phänomen wird als Phase Transition bezeichnet, in Anlehnung an physikalische Phasenübergänge.
+
+Die Messung erfolgte anhand zweier Metriken: Der ICL-Score quantifiziert, wie stark die Vorhersage eines Tokens von seinem Kontext abhängt, gemessen als Differenz der Log-Likelihood mit und ohne relevanten Kontext. Der Induction Head Score misst, wie stark Attention-Köpfe das Prefix Matching-Muster zeigen, quantifiziert durch ihre Tendenz, auf Positionen zu fokussieren, deren Vorgänger mit dem eigenen Vorgänger übereinstimmt \cite{Ols_22}.
+
+Abbildung~\ref{fig:phase_transition} zeigt die zentrale Beobachtung: Beide Metriken steigen synchron und abrupt an, typischerweise zwischen 20\% und 30\% des Trainingsfortschritts. Diese Korrelation ist über verschiedene Modellgrößen von 13 Millionen bis 13 Milliarden Parametern hinweg konsistent \cite{Ols_22}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/phase_transition.png}
+    \caption{Phase Transition während des Trainings. Der synchrone Anstieg von ICL-Score und Induction Head Score suggerierte einen kausalen Zusammenhang, der später durch Function Vector-Studien relativiert wurde. Reproduziert nach Olsson et al. \cite{Ols_22}}
+    %\textbf{X-Achse:} Trainingsfortschritt (0-100\%)\\
+    %\textbf{Y-Achse:} ICL Score (blau) / Induction Head Score (rot)\\[0.3cm]
+    %Phase 1 (0-20\%): Beide nahe Null\\
+    %Phase 2 (20-30\%): Abrupter Anstieg beider Metriken\\
+    %Phase 3 (30-100\%): Stabilisierung und Verfeinerung
+    %\vspace{1.5cm}
+
+
+    \label{fig:phase_transition}
+\end{figure}
+
+Die kausale Rolle von Induction Heads wurde durch systematische Ablation-Experimente getestet \cite{Ols_22}. Nach selektiver Entfernung aller Attention-Köpfe mit hohem Induction Head Score sank die ICL-Performance um 70-90\%, während die Entfernung zufälliger anderer Köpfe kaum Einfluss hatte.
+
+Ein weiteres kritisches Experiment betraf die Previous Token Heads. Deren Ablation zerstörte die Funktion der Induction Heads vollständig, obwohl diese selbst intakt blieben. Dieses Ergebnis bestätigt die Zwei-Stufen-Architektur: Ohne die vorbereitete Bigram-Information im Residual Stream können Induction Heads das Prefix Matching nicht durchführen \cite{ENO_21}.
+
+\subsection{Spezialisierungen und Erweiterungen}\label{subsec:spezialisierung_induction}
+
+Die ursprüngliche Charakterisierung von Induction Heads als einfache Kopier-Mechanismen erwies sich als unvollständig. Neuere Arbeiten zeigen eine größere Vielfalt und Spezialisierung.
+
+Eine wichtige Erweiterung sind sogenannte Selective Induction Heads \cite{DAN_25}, die nicht beliebige Wiederholungsmuster kopieren, sondern selektiv auf kausale Strukturen im Kontext reagieren. In Experimenten mit kausalen Reasoning-Aufgaben zeigten bestimmte Attention-Köpfe das Induction-Muster nur dann, wenn der kopierte Kontext kausal relevant war. Diese Köpfe wählen aktiv aus, welche Kontextinformation weitergegeben wird, anstatt alle Wiederholungen gleich zu behandeln.
+
+Die Evolution von Induction Heads während des Trainings zeigt eine interessante Dynamik \cite{STA_24}: In frühen Trainingsphasen reagieren Induction Heads auf beliebige Token-Wiederholungen. Mit fortschreitendem Training spezialisieren sie sich auf semantisch bedeutsame Muster und ignorieren irrelevante Wiederholungen.
+
+Diese Arbeiten deuten darauf hin, dass Induction Heads keine statische Kategorie sind, sondern ein Spektrum von Mechanismen mit unterschiedlicher Spezifität. Die Frage, welche dieser Varianten für ICL relevant sind, führt zur kritischen Evaluation der ursprünglichen Hypothese.
+
+\subsection{Kritische Evaluation der Induction Head-Hypothese}\label{subsec:kritik_induction}
+
+Die ursprünglichen Experimente von Olsson et al. \cite{Ols_22} testeten primär Copy-Aufgaben, bei denen Token wörtlich wiederholt werden. Diese Aufgaben sind per Definition optimal für den Induction-Mechanismus geeignet, da die korrekte Antwort im Kontext enthalten ist und durch Kopieren gewonnen werden kann.
+
+Die Generalisierung auf abstraktere ICL-Aufgaben ist jedoch fraglich. Bei einer Übersetzungsaufgabe wie \textit{cat $\rightarrow$ Katze, dog $\rightarrow$ Hund, bird $\rightarrow$ ?} ist die korrekte Antwort \textit{Vogel} nicht im Kontext enthalten und kann nicht durch Kopieren gewonnen werden. Das Modell muss eine Funktion, die Übersetzung von Englisch nach Deutsch, aus den Beispielen ableiten und auf die neue Eingabe anwenden.
+
+Min et al. \cite{MIN_22} lieferten einen weiteren kritischen Befund: ICL funktioniert teilweise auch mit zufälligen Labels. Wenn Induction Heads der primäre Mechanismus wären, sollte die Permutation der Labels einen vollständigen Zusammenbruch verursachen, da die kopierten Token nun falsch wären. Die robuste Performance deutet auf einen zusätzlichen Mechanismus hin, der die Aufgabenstruktur unabhängig von den spezifischen Mappings erfasst.
+
+Diese kritische Evaluation motivierte die Suche nach alternativen Mechanismen und führte zur Entdeckung von Function Vectors, die im folgenden Kapitel behandelt werden.
+
+% =============================================================================
+% FUNCTION VECTORS
+% =============================================================================
+
+\section{Function Vectors: Der Abstraktions-Mechanismus}\label{sec:function_vectors}
+
+\subsection{Definition und konzeptuelle Grundlage}\label{subsec:definition_fv}
+
+Im Jahr 2023 berichteten Todd et al. \cite{TOD_24} von einem fundamentalen Befund, der das Verständnis von ICL grundlegend veränderte: In autoregressiven Sprachmodellen existieren kompakte Vektorrepräsentationen, die abstrakte Input-Output-Funktionen kodieren. Diese sogenannten Function Vectors werden von einer kleinen Anzahl spezialisierter Attention-Köpfe produziert und repräsentieren nicht einzelne Token, sondern die Aufgabenstruktur selbst.
+
+Der konzeptuelle Unterschied zu Induction Heads ist fundamental. Induction Heads implementieren eine Retrieval-Operation: Sie suchen nach Mustern im Kontext und kopieren passende Token. Function Vectors implementieren eine Transformations-Operation: Sie aktivieren eine gelernte Funktion, die auf die Eingabe angewendet wird. Bei einer Antonym-Aufgabe wie \textit{hot $\rightarrow$ cold, happy $\rightarrow$ sad, big $\rightarrow$ ?} kopiert ein Induction Head nichts, da \textit{small} nicht im Kontext vorkommt. Ein Function Vector hingegen aktiviert die Funktion ``generiere Antonyme'', die das Modell während des Pretrainings gelernt hat \cite{TOD_24}.
+
+\subsection{Identifikation durch Causal Mediation Analysis}\label{subsec:identifikation_fv}
+
+Die Identifikation von Function Vectors erfordert eine methodisch rigorose Vorgehensweise, da Korrelation zwischen Aktivierung und Performance nicht Kausalität beweist. Ein dreistufiges Verfahren basierend auf Causal Mediation Analysis ermöglicht kausale Aussagen über den Beitrag einzelner Attention-Köpfe \cite{TOD_24}.
+
+Im ersten Schritt wird das Modell auf einem Standard-ICL-Prompt ausgeführt, der Beispiele der Form $(x_1, y_1), (x_2, y_2), \ldots, (x_k, y_k)$ enthält, gefolgt von einer Anfrage $x_q$. Das Modell produziert die korrekte Antwort $y_q$. Während dieses Durchlaufs werden die Aktivierungen aller Attention-Köpfe aufgezeichnet.
+
+Im zweiten Schritt wird ein manipulierter Prompt erstellt, bei dem die Labels zufällig permutiert wurden. Bei einer Antonym-Aufgabe könnte der manipulierte Prompt \textit{hot $\rightarrow$ small, big $\rightarrow$ cold, happy $\rightarrow$ ?} lauten. Da die Beispiele keine konsistente Aufgabe mehr kodieren, macht das Modell bei diesem Prompt systematisch Fehler.
+
+Im dritten Schritt erfolgt das Activation Patching: Die Aktivierung eines einzelnen Attention-Kopfes $h$ im manipulierten Durchlauf wird durch die entsprechende Aktivierung aus dem korrekten Durchlauf ersetzt. Wenn sich die Vorhersage durch diese Ersetzung verbessert, hat der Kopf $h$ einen positiven kausalen Effekt auf die ICL-Performance. Der Effekt wird quantifiziert als:
+
+$$\text{Causal Effect}(h) = \log P(y_q | \text{patched}) - \log P(y_q | \text{shuffled})$$
+
+Diese Metrik quantifiziert, wie stark sich die Vorhersage verbessert, wenn die Aktivierung eines Kopfes vom korrekten Durchlauf ``eingepflanzt'' wird. Ein hoher Wert bedeutet: Dieser Kopf trägt kausal zur ICL-Fähigkeit bei, nicht nur korrelativ. Abbildung~\ref{fig:activation_patching} illustriert die resultierenden kausalen Effekte über alle Attention-Köpfe.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/activation_patching.png}
+    % HINWEIS: Verwende Figure 2 aus Todd et al. (2024) „Function Vectors in Large Language Models“
+    % URL: https://arxiv.org/abs/2310.15213
+    % Die Abbildung zeigt die kausalen Effekte aller Attention-Köpfe als Heatmap (Layer x Head)
+    %\fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}
+    %Die Originalabbildung (Figure 3) zeigt eine Heatmap:\\[0.3cm]
+    %Y-Achse: Attention Head Index \\[0.2cm]
+    %X-Achse: Layer Index \\[0.2cm]
+    %Farbe: Kausaler Effekt (dunkel = stark)\\[0.2cm]
+    %Wenige Köpfe in späten Layern zeigen starke Effekte
+    %\vspace{1.5cm}}}
+    \caption{Kausale Effekte einzelner Attention-Köpfe auf die ICL-Performance. Die Analyse zeigt, dass nur wenige Köpfe in mittleren bis späten Layern einen starken kausalen Effekt haben. Diese Köpfe werden als Function Vector Heads bezeichnet. Quelle: Todd et al. \cite{TOD_24}, Figure 3.}
+    \label{fig:activation_patching}
+\end{figure}
+
+Durch systematische Anwendung über alle Attention-Köpfe identifizierten Todd et al. \cite{TOD_24} eine kleine Gruppe von Köpfen mit konsistent starkem kausalen Effekt über verschiedene Aufgaben hinweg. Diese Köpfe, als Function Vector Heads bezeichnet, konzentrieren sich typischerweise in mittleren bis späten Layern des Modells.
+
+\subsection{Extraktion und Transfer von Function Vectors}\label{subsec:extraktion_fv}
+
+Der Function Vector selbst wird als gewichtete Summe der task-conditioned Aktivierungen der Top-K Function Vector Heads extrahiert \cite{TOD_24}. Konkret wird die Differenz zwischen der Aktivierung im ICL-Durchlauf und einem neutralen Baseline-Durchlauf berechnet:
+
+$$\text{FV} = \sum_{h \in \text{Top-K}} \left(a_h^{\text{ICL}} - a_h^{\text{baseline}}\right)$$
+
+Die Formel extrahiert den ``Unterschied'', den die ICL-Beispiele in den wichtigsten Attention-Köpfen bewirken. Dieser Differenzvektor repräsentiert die Aufgabe selbst -- er kann gespeichert und später zu einem anderen Prompt addiert werden, um dieselbe Funktion auszulösen. Diese kompakte Repräsentation, typischerweise ein Vektor der Dimension des Residual Streams, kodiert die gesamte Aufgabeninformation. Ein bemerkenswertes Ergebnis ist, dass dieser Vektor transferierbar ist \cite{TOD_24}: Er kann direkt zum Residual Stream addiert werden und triggert die entsprechende Funktion auch ohne ICL-Beispiele. Ein aus einer Antonym-Aufgabe extrahierter Function Vector kann zu einem Zero-Shot-Prompt addiert werden und verbessert die Antonym-Generierung signifikant.
+
+\subsection{Eigenschaften und Robustheit}\label{subsec:eigenschaften_fv}
+
+Function Vectors zeigen mehrere bemerkenswerte Eigenschaften \cite{TOD_24, HEN_23}.
+
+Die Robustheit gegenüber Kontextvariation ist ausgeprägt. Ein aus strukturierten Beispielen wie \textit{hot $\rightarrow$ cold} extrahierter Function Vector funktioniert auch in natürlichsprachlichen Kontexten wie \textit{Was ist das Gegenteil von happy?}. Diese Generalisierung über Formate hinweg unterscheidet Function Vectors fundamental von Induction Heads, die auf das spezifische Wiederholungsformat angewiesen sind \cite{TOD_24}.
+
+Die Aufgabenspezifität ist hoch. Function Vectors für verschiedene Aufgaben wie Antonym-Generierung, Übersetzung oder Sentiment-Klassifikation sind orthogonal zueinander. Diese Separabilität ermöglicht in begrenztem Maße Kompositionalität: Die Addition von Function Vectors für ``Französisch zu Englisch'' und ``Großschreibung'' kann die kombinierte Funktion approximieren, wobei die Qualität mit der Anzahl kombinierter Funktionen abnimmt \cite{TOD_24}.
+
+Ein verwandter Mechanismus unter dem Namen Task Vectors zeigt, dass ICL systematisch Vektorrepräsentationen erzeugt, die sich über die Beispiele im Prompt akkumulieren \cite{HEN_23}. Mit jedem zusätzlichen Beispiel wird der Task Vector verstärkt und stabilisiert. Diese Akkumulationsdynamik erklärt, warum Few-Shot-Performance typischerweise mit der Anzahl der Beispiele steigt.
+
+\subsection{Der systematische Vergleich von Yin und Steinhardt}\label{subsec:vergleich_empirisch}
+
+Die zentrale Studie von Yin und Steinhardt \cite{YS_25} vergleicht erstmals systematisch die relative Bedeutung von Induction Heads und Function Vector-Köpfen für ICL. Die Autoren analysierten 12 Sprachmodelle der GPT-2- und Pythia-Familien mit Größen von 70 Millionen bis 7 Milliarden Parametern auf über 40 diversen ICL-Aufgaben.
+
+Die Methodik kombinierte Ablation beider Mechanismen mit detaillierter Messung der ICL-Performance. Für Induction Heads verwendeten die Autoren den etablierten Prefix Matching Score nach Olsson et al. \cite{Ols_22}. Für Function Vector-Köpfe wendeten sie die Causal Mediation Analysis nach Todd et al. \cite{TOD_24} an. Die Aufgaben wurden in zwei Kategorien unterteilt: Copy-Tasks, bei denen die Antwort im Kontext vorkommt, und abstrakte Tasks wie Klassifikation, Übersetzung oder logisches Schließen.
+
+Die Hauptergebnisse, zusammengefasst in Tabelle~\ref{tab:ablation_comparison}, fordern das von Olsson et al. etablierte Narrativ heraus. Bei Copy-Tasks zeigen beide Mechanismen vergleichbare Effekte. Bei abstrakten Tasks dominieren Function Vector-Köpfe deutlich: Ihre Ablation reduziert die ICL-Performance um 60-80\%, während die Ablation von Induction Heads nur einen moderaten Effekt von 10-30\% zeigt \cite{YS_25}.
+
+\begin{table}[H]
+\centering
+\caption{Vergleich der Ablationseffekte auf ICL-Performance. Die Werte zeigen den prozentualen Rückgang der Accuracy nach Entfernung der jeweiligen Köpfe. Daten aus Yin und Steinhardt \cite{YS_25}, Tabellen 1 und 2.}
+\label{tab:ablation_comparison}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Ablation} & \textbf{Copy-Tasks} & \textbf{Abstrakte Tasks} \\
+\midrule
+Induction Heads entfernt & $-$45\% & $-$15\% \\
+Function Vector-Köpfe entfernt & $-$55\% & $-$75\% \\
+Beide entfernt & $-$82\% & $-$85\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Die Layer-Verteilung beider Mechanismen zeigt ein konsistentes Muster über verschiedene Modellgrößen hinweg. Induction Heads konzentrieren sich in frühen bis mittleren Layern, typischerweise Layer 2-6 in einem 12-Layer-Modell. Function Vector-Köpfe befinden sich überwiegend in mittleren bis späten Layern, typischerweise Layer 6-10 \cite{YS_25}. Diese Verteilung suggeriert eine hierarchische Verarbeitung, die in Kapitel 5 weiter analysiert wird.
+
+Der bemerkenswerteste Befund betrifft die Überlappung zwischen beiden Mechanismen. Yin und Steinhardt \cite{YS_25} identifizierten eine signifikante Anzahl von Attention-Köpfen, die sowohl hohe Induction Head Scores als auch hohe kausale Effekte als Function Vector-Köpfe aufweisen. Diese Überlappung ist jedoch asymmetrisch: Viele Function Vector-Köpfe funktionieren auch als Induction Heads, aber nicht alle Induction Heads sind Function Vector-Köpfe. Diese Asymmetrie bildet die Grundlage für die in Kapitel 5 diskutierte Entwicklungshypothese.
+
+% =============================================================================
+% BEZIEHUNG UND INTEGRATION
+% =============================================================================
+
+\section{Die Beziehung zwischen Induction Heads und Function Vectors}\label{sec:beziehung}
+
+\subsection{Die Entwicklungshypothese}\label{subsec:entwicklung}
+
+Die in Kapitel 4 dokumentierte asymmetrische Überlappung zwischen Induction Heads und Function Vector-Köpfen führt zu einer zentralen Hypothese: Induction Heads könnten als Vorläufermechanismus fungieren, aus dem sich Function Vector-Köpfe während des Trainings entwickeln. Yin und Steinhardt \cite{YS_25} formulieren diese Vermutung explizit:
+
+\begin{quote}
+\textit{Many FV heads start as induction heads during training before transitioning to the FV mechanism. This leads us to speculate that induction facilitates learning the more complex FV mechanism that ultimately drives ICL.}
+\end{quote}
+
+Diese Hypothese wird durch mehrere empirische Beobachtungen gestützt. Die temporale Ordnung während des Trainings zeigt, dass Induction Heads früher entstehen als Function Vector-Mechanismen. Die Phase Transition für Induction Heads, dokumentiert von Olsson et al. \cite{Ols_22}, erfolgt bei etwa 20-30\% des Trainingsfortschritts. Function Vector-Köpfe entwickeln ihre charakteristische kausale Relevanz graduell danach, typischerweise zwischen 40\% und 60\% des Trainings \cite{YS_25}.
+
+Die räumliche Ordnung innerhalb des Modells unterstützt ebenfalls die Hypothese. Induction Heads befinden sich primär in frühen bis mittleren Layern, Function Vector-Köpfe in mittleren bis späten Layern. Diese Verteilung entspricht dem bekannten Muster hierarchischer Verarbeitung in Transformern: Frühe Layer verarbeiten lokale Muster, späte Layer bilden abstrakte Repräsentationen \cite{FSBC_24}.
+
+Minegishi et al. \cite{MIN_25} liefern zusätzliche Evidenz durch die Analyse von Multi-Phase Circuit Emergence. Die Autoren zeigen, dass die Entwicklung von ICL-Fähigkeiten nicht durch eine einzelne Phase Transition charakterisiert ist, wie ursprünglich von Olsson et al. \cite{Ols_22} suggeriert, sondern durch mehrere aufeinanderfolgende Phasen, in denen jeweils unterschiedliche Circuits entstehen. Induction Heads repräsentieren eine frühe Phase, gefolgt von komplexeren Mechanismen in späteren Trainingsphasen.
+
+Abbildung~\ref{fig:developmental_model} fasst das resultierende Entwicklungsmodell zusammen.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/developmental_model.png}
+    %\fbox{\parbox{0.9\textwidth}{\centering\vspace{1.5cm}[Eigene Darstellung basierend auf Yin und Steinhardt \cite{YS_25} und Minegishi et al. \cite{MIN_25}]\\[0.5cm]
+    %\textbf{Trainingsfortschritt:} $\longrightarrow$\\[0.3cm]
+    %\begin{tabular}{cccc}
+    %0-20\% & 20-30\% & 30-50\% & 50-100\%\\
+    %\hline
+    %Keine ICL & Induction Heads & Transition & Function Vectors\\
+    %& entstehen & (Überlappung) & dominieren
+    %\end{tabular}\\[0.3cm]
+    %Einige Induction Heads $\xrightarrow{\text{spezialisieren sich}}$ Function Vector-Köpfe
+    %\vspace{1.5cm}}}
+    \caption{Entwicklungsmodell der ICL-Mechanismen. Die Entstehung verläuft von Induction Heads zu Function Vectors, wobei einige Köpfe beide Funktionen durchlaufen.}
+    \label{fig:developmental_model}
+\end{figure}
+
+\subsection{Alternative Perspektive: ICL ohne Kopieren}\label{subsec:alternative}
+
+Nicht alle neueren Arbeiten unterstützen die Notwendigkeit von Induction Heads als Vorläufer. Eine aktuelle Studie \cite{SAH_25} demonstriert, dass Transformer ICL-Fähigkeiten entwickeln können, selbst wenn der Induction-Mechanismus während des Trainings systematisch unterdrückt wird.
+
+Die Autoren führten ein Experiment durch, das sie als Hapax bezeichnen, in Anlehnung an den linguistischen Begriff für Wörter, die nur einmal in einem Korpus vorkommen. Das Verfahren modifiziert den Trainingsprozess: Token, die durch den Induction-Mechanismus korrekt vorhergesagt werden könnten, werden aus der Loss-Berechnung ausgeschlossen. Konkret werden Token mit hohem Prefix Matching Score, die auf eine frühere identische Subsequenz folgen, während des Trainings ignoriert \cite{SAH_25}.
+
+Das Ergebnis ist bemerkenswert: Trotz einer signifikanten Reduktion der Induction-Kopf-Aktivität blieb die Performance auf abstrakten ICL-Aufgaben vergleichbar mit dem Basismodell und übertraf dieses sogar auf 13 von 21 getesteten Tasks. Dieses Ergebnis hat wichtige Implikationen für das Verständnis der Beziehung zwischen beiden Mechanismen. Induction Heads sind hilfreich und entstehen unter normalen Trainingsbedingungen, aber sie sind nicht notwendig für ICL. Modelle können alternative Entwicklungspfade einschlagen, um dieselben Fähigkeiten zu erwerben.
+
+Diese Perspektive wird durch eine weitere Beobachtung ergänzt \cite{SIN_25}: ICL selbst kann ein transientes Phänomen sein. Bei sehr langem Training, über den typischen Konvergenzpunkt hinaus, kann ICL wieder verschwinden, wobei Modelle zu einem Mechanismus übergehen, der als Context-constrained In-Weights Learning (CIWL) bezeichnet wird. Bei CIWL nutzt das Modell den Kontext, um zwischen verschiedenen während des Pretrainings gelernten Funktionen zu wählen, anstatt neue Funktionen aus den Beispielen zu inferieren.
+
+Diese Dynamik zwischen konkurrierenden Lernstrategien, als Strategy Coopetition bezeichnet, zeigt, dass das Verständnis von ICL-Mechanismen komplexer ist als eine einfache Taxonomie von Induction Heads versus Function Vectors \cite{SIN_25}. Die beobachtete Beziehung zwischen beiden Mechanismen könnte ein Artefakt typischer Trainingsregimes sein, nicht eine fundamentale Notwendigkeit.
+
+\subsection{Kritische Bewertung der empirischen Evidenz}\label{subsec:kritische_bewertung}
+
+Die Entwicklungshypothese basiert auf der Beobachtung asymmetrischer Überlappung zwischen Induction Heads und Function Vector-Köpfen. Yin und Steinhardt \cite{YS_25} berichten, dass viele FV-Köpfe auch IH-Eigenschaften zeigen, aber nicht umgekehrt. Diese Asymmetrie wird als Evidenz für eine Entwicklungsbeziehung interpretiert, bei der IH zu FV werden. Die Stärke dieser Evidenz hängt jedoch von drei methodischen Faktoren ab, die in der folgenden Synthese berücksichtigt werden müssen.
+
+Erstens fehlen vollständige Überlappungsstatistiken über verschiedene Modellgrößen hinweg. Wenn die Entwicklungshypothese korrekt wäre, sollte die Überlappungsrate mit Modellgröße abnehmen, da größere Modelle länger trainiert werden und daher mehr IH zu FV geworden sein sollten. Die verfügbaren Daten erlauben diese Prüfung nicht. Zweitens sind die verwendeten Metriken (Prefix Matching Score für IH, Causal Effect für FV) mit $r = 0.67$ korreliert \cite{YS_25}, was bedeutet, dass beide „Kontextsensitivität“ messen. Die beobachtete Überlappung könnte teilweise ein Messartefakt sein: Beide Metriken erfassen verwandte Phänomene aus verschiedenen Winkeln. Drittens basiert die gesamte Circuit-Analyse auf der Modularitätsannahme, dass Attention-Köpfe diskrete funktionale Einheiten sind. Neuere Arbeiten zu Superposition \cite{ENO_21} zeigen jedoch, dass Features über viele Komponenten verteilt sein können. Wenn IH und FV keine diskreten Mechanismen sind, sondern Projektionen verteilter Repräsentationen, ist die Frage nach ihrer „Entwicklungsbeziehung“ möglicherweise nicht sinnvoll gestellt.
+
+Diese methodischen Einschränkungen schmälern die Evidenz jedoch nicht fundamental. Erstens erklärt die Korrelation $r = 0.67$ zwischen PMS und CE nur 45\% der gemeinsamen Varianz, während die stark unterschiedlichen Ablationseffekte bei abstrakten Tasks (75\% vs. 15\%, Tabelle~\ref{tab:ablation_comparison}) auf distinkte Mechanismen hindeuten. Zweitens blieben FV selbst bei einer hypothetischen 50/50-Verteilung zwischen Copy- und abstrakten Tasks dominant (65\% vs. 30\% durchschnittlicher Ablationseffekt). Drittens rechtfertigen die kausalen Ablationseffekte einzelner Köpfe die Modularitätsannahme als nützliche Approximation, auch wenn Superposition die zugrundeliegenden Repräsentationen komplexer macht.
+
+Drei Beobachtungen sprechen robust für die Entwicklungshypothese. Die temporale Ordnung (IH bei 20-30\%, FV bei 40-60\% des Trainings) ist konsistent über verschiedene Modellgrößen hinweg \cite{Ols_22, YS_25}. Die räumliche Verteilung (IH in frühen, FV in späten Layern) entspricht dem bekannten Muster hierarchischer Verarbeitung \cite{FSBC_24}. Die Experimente von Sahin et al. \cite{SAH_25}, die zeigen, dass ICL ohne IH möglich ist, widerlegen nicht die Entwicklungshypothese, sondern zeigen, dass die Entwicklung probabilistisch ist: IH sind ein häufiger, aber nicht notwendiger Entwicklungsschritt.
+
+\subsection{Synthese: Eine hierarchische Entwicklungsbeziehung}\label{subsec:synthese}
+
+Die verfügbare Evidenz spricht für eine hierarchische Entwicklungsbeziehung, bei der Induction Heads als Vorläufermechanismus fungieren, aus dem sich Function Vector-Köpfe während des Trainings entwickeln. Diese Interpretation ist die plausibelste Erklärung der beobachteten Muster, unterliegt jedoch den in Abschnitt~\ref{subsec:kritische_bewertung} diskutierten methodischen Einschränkungen.
+
+Drei empirische Beobachtungen stützen die Entwicklungshypothese. Die temporale Ordnung zeigt, dass Induction Heads bei 20-30\% des Trainingsfortschritts in einer abrupten Phase Transition entstehen \cite{Ols_22}, während Function Vector-Köpfe ihre charakteristische kausale Relevanz graduell zwischen 40-60\% des Trainings entwickeln \cite{YS_25}. Diese zeitliche Abfolge ist konsistent über verschiedene Modellgrößen hinweg und schwer mit vollständiger Unabhängigkeit vereinbar. Die räumliche Verteilung zeigt ein hierarchisches Muster: Induction Heads konzentrieren sich in frühen bis mittleren Layern (Layer 2-6), Function Vector-Köpfe in mittleren bis späten Layern (Layer 6-10) \cite{YS_25}. Diese Verteilung entspricht dem bekannten Muster hierarchischer Verarbeitung in Transformern \cite{FSBC_24}. Die asymmetrische Überlappung ist der stärkste Hinweis: Viele Function Vector-Köpfe zeigen auch Induction Head-Eigenschaften, aber nicht umgekehrt \cite{YS_25}.
+
+Die Entwicklungshypothese erklärt auch die scheinbar widersprüchlichen Befunde von Sahin et al. \cite{SAH_25}, die zeigen, dass ICL ohne Induction Heads möglich ist. Wenn der Induction-Mechanismus während des Trainings unterdrückt wird, können Modelle alternative Entwicklungspfade einschlagen und direkt Function Vector-Mechanismen entwickeln. Dies zeigt, dass die Entwicklungsbeziehung probabilistisch ist: Unter normalen Trainingsbedingungen entstehen Induction Heads zuerst, weil sie einfacher zu lernen sind, aber das Training kann auch direkt komplexere Mechanismen hervorbringen.
+
+Die Entwicklungshypothese ist die beste verfügbare Interpretation innerhalb des Circuit-Paradigmas. Die konsistente temporale und räumliche Ordnung über verschiedene Modelle hinweg \cite{Ols_22, YS_25, MIN_25} bildet ein kohärentes Bild. Alternative Interpretationen, die IH und FV als vollständig unabhängige Mechanismen betrachten, haben Schwierigkeiten, diese systematischen Muster zu erklären.
+
+% =============================================================================
+% DISKUSSION
+% =============================================================================
+
+\section{Diskussion}\label{sec:diskussion}
+
+\subsection{Implikationen für das Verständnis von ICL}\label{subsec:implikationen}
+
+Die Entwicklung von der Induction Head-Hypothese zu einem differenzierten Verständnis mit Function Vectors markiert einen bedeutsamen methodischen und konzeptuellen Fortschritt in der mechanistischen Interpretierbarkeit.
+
+Der methodische Fortschritt betrifft die Unterscheidung zwischen Korrelation und Kausalität. Olsson et al. \cite{Ols_22} beobachteten eine starke Korrelation zwischen Induction Heads und ICL-Fähigkeiten, die sie als kausalen Zusammenhang interpretierten. Die Ablationsexperimente schienen diese Interpretation zu bestätigen. Todd et al. \cite{TOD_24} zeigten jedoch, dass Ablation allein nicht ausreicht: Ein Kopf kann notwendig für eine Aufgabe sein, ohne der primäre Treiber zu sein. Causal Mediation Analysis durch Activation Patching erlaubt die Unterscheidung zwischen Notwendigkeit und kausaler Relevanz. Diese methodische Verfeinerung ist über den spezifischen Fall von ICL hinaus bedeutsam für die mechanistische Interpretierbarkeit insgesamt.
+
+Der konzeptuelle Fortschritt betrifft das Verständnis von ICL selbst. Die ursprüngliche Induction Head-Hypothese implizierte, dass ICL primär ein Retrieval-Mechanismus ist, bei dem relevante Information aus dem Kontext kopiert wird. Die Function Vector-Perspektive zeigt, dass ICL auch Abstraktions- und Aktivierungsmechanismen umfasst. In-Context Learning ist kein monolithischer Prozess, sondern emergiert aus dem Zusammenspiel mehrerer spezialisierter Mechanismen mit unterschiedlichen funktionalen Rollen \cite{YS_25}.
+
+Für die praktische Anwendung von Sprachmodellen ergeben sich mehrere Implikationen. Die Wahl des Prompt-Formats kann beeinflussen, welcher Mechanismus dominant ist. Prompts, die explizite Wiederholungsmuster enthalten, aktivieren primär Induction Heads. Prompts, die abstrakte Aufgabenstrukturen kodieren, nutzen Function Vectors effektiver \cite{TOD_24}. Die Anzahl der Beispiele hat unterschiedliche Effekte auf beide Mechanismen: Induction Heads profitieren bereits von einzelnen Wiederholungen, während Function Vectors mit zusätzlichen Beispielen stärker werden \cite{HEN_23}.
+
+\subsection{Methodische Limitationen der analysierten Studien}\label{subsec:methoden_kritik}
+
+Die in Abschnitt~\ref{subsec:kritische_bewertung} diskutierten methodischen Einschränkungen (Metrikkorrelation, Task-Selection Bias, Modularitätsannahme) betreffen nicht nur die Entwicklungshypothese, sondern die gesamte mechanistische Interpretierbarkeit von ICL. Drei zusätzliche Aspekte verdienen kritische Reflexion.
+
+Die Literatur leidet unter methodischer Heterogenität. Olsson et al. \cite{Ols_22} verwenden den Prefix Matching Score auf GPT-2-Modellen, Todd et al. \cite{TOD_24} nutzen Causal Mediation Analysis auf anderen Architekturen, und Yin und Steinhardt \cite{YS_25} kombinieren beide Ansätze auf Pythia-Modellen. Diese Heterogenität erschwert direkte Vergleiche. Wenn Olsson et al. Causal Effect statt Prefix Matching Score verwendet hätten, hätten sie möglicherweise andere Köpfe als „Induction Heads“ identifiziert. Die konvergente Evidenz aus mehreren unabhängigen Studien ist dennoch bemerkenswert: Die konsistente temporale und räumliche Ordnung über verschiedene Modellgrößen und Architekturen hinweg \cite{Ols_22, YS_25, MIN_25} deutet auf robuste Phänomene hin.
+
+Die analysierten Studien fokussieren auf kleine bis mittelgroße Modelle (70 Millionen bis 7 Milliarden Parameter). Moderne Systeme wie GPT-4 oder Claude haben vermutlich hundertmal mehr Parameter. Ob die identifizierten Mechanismen in dieser Größenordnung noch relevant sind oder durch emergente Mechanismen ergänzt werden, ist unklar. Die Generalisierung der Befunde auf sehr große Modelle bleibt eine offene empirische Frage.
+
+Die Fokussierung auf autoregressive Decoder-Modelle schränkt die Generalisierbarkeit ein. Encoder-only Modelle wie BERT oder Encoder-Decoder-Modelle wie T5 nutzen andere Attention-Muster und könnten andere Mechanismen für verwandte Fähigkeiten entwickeln. Eine Generalisierung der Befunde auf alle Transformer-Architekturen ist nicht gerechtfertigt.
+
+Trotz dieser Limitationen rechtfertigt die konvergente Evidenz aus mehreren unabhängigen Studien die in Abschnitt~\ref{subsec:synthese} entwickelte Synthese. Zukünftige Forschung sollte standardisierte Benchmarks und Metriken entwickeln, um Vergleichbarkeit zu gewährleisten.
+
+\subsection{Offene Forschungsfragen}\label{subsec:offene_fragen}
+
+Trotz der Fortschritte bleiben zentrale Fragen unbeantwortet, die Richtungen für zukünftige Forschung definieren.
+
+Der Mechanismus der Transition von Induction Heads zu Function Vector-Köpfen ist auf Gewichtsebene nicht verstanden. Die Beobachtung, dass einige Köpfe beide Funktionen erfüllen \cite{YS_25}, erklärt nicht, wie diese Transition implementiert ist. Welche Änderungen in den Gewichtsmatrizen $W_Q$, $W_K$, $W_V$ und $W_O$ charakterisieren diese Transition? Welche Trainingssignale lösen sie aus? Die Beantwortung dieser Fragen könnte ermöglichen, die Entwicklung von ICL-Fähigkeiten gezielt zu beeinflussen.
+
+Die Skalierung zu sehr großen Modellen ist ebenfalls nicht vollständig verstanden. Die bisherigen Analysen \cite{YS_25} umfassten Modelle bis 7 Milliarden Parameter, was zum Zeitpunkt der Studie groß, aber nicht mehr führend war. Moderne Systeme wie GPT-4, Claude oder Llama 2 haben vermutlich hundertmal mehr Parameter. Ob die identifizierten Mechanismen in dieser Größenordnung noch relevant sind oder durch emergente Mechanismen ergänzt werden, ist eine offene empirische Frage.
+
+Die Task-Spezifität von Function Vectors erfordert systematische Untersuchung. Entwickeln Modelle spezialisierte Function Vectors für verschiedene Aufgabenfamilien, etwa unterschiedliche Vektoren für Übersetzung, Klassifikation und logisches Schließen? Oder existiert ein allgemeinerer Mechanismus mit aufgabenspezifischer Modulation? Yang et al. \cite{YAN_25} liefern erste Hinweise, dass Task Vectors aufgabenspezifische Strukturen aufweisen, aber eine systematische Taxonomie fehlt.
+
+Die Verbindung zu anderen emergenten Fähigkeiten wie Chain-of-Thought Reasoning oder Instruction Following ist unklar. Nutzen diese Fähigkeiten ähnliche Mechanismen wie ICL, oder entstehen dafür separate Circuits? Musslick \cite{MUS_25} diskutiert, dass verschiedene emergente Fähigkeiten möglicherweise auf denselben grundlegenden Mechanismen basieren, was eine unifizierte Theorie ermöglichen könnte.
+
+\subsection{Limitationen dieser Arbeit}\label{subsec:limitationen}
+
+Diese Arbeit hat einen Synthese-Charakter und basiert auf der Analyse publizierter Studien ohne eigene experimentelle Validierung. Mehrere Limitationen müssen transparent gemacht werden.
+
+Die Quellenbasis konzentriert sich auf wenige zentrale Studien, insbesondere Olsson et al. \cite{Ols_22}, Todd et al. \cite{TOD_24} und Yin und Steinhardt \cite{YS_25}. Diese Fokussierung ist inhaltlich begründet, da diese Arbeiten die zentralen empirischen Befunde liefern. Alternative Interpretationen oder widersprüchliche Befunde aus weniger prominenten Arbeiten könnten jedoch unterrepräsentiert sein.
+
+Die Interpretation der Beziehung zwischen Induction Heads und Function Vectors als Entwicklungsbeziehung folgt der Spekulation von Yin und Steinhardt \cite{YS_25}, die selbst als nicht definitiv belegt gekennzeichnet ist. Die Alternative, dass beide Mechanismen unabhängig entstehen und lediglich korreliert sind, kann mit den verfügbaren Daten nicht ausgeschlossen werden.
+
+Der Fokus liegt auf autoregressiven Decoder-Modellen wie GPT. Encoder-only Modelle wie BERT oder Encoder-Decoder-Modelle wie T5 nutzen andere Attention-Muster und könnten andere Mechanismen für verwandte Fähigkeiten entwickeln. Eine Generalisierung der Befunde auf alle Transformer-Architekturen ist daher nicht gerechtfertigt.
+
+% =============================================================================
+% FAZIT
+% =============================================================================
+
+\section{Fazit}\label{sec:fazit}
+
+Diese Arbeit hat die Entwicklung des mechanistischen Verständnisses von In-Context Learning von 2022 bis 2025 analysiert und die Beziehung zwischen den zwei zentralen Erklärungsmechanismen, Induction Heads und Function Vectors, systematisch untersucht.
+
+Die ursprüngliche Induction Head-Hypothese von Olsson et al. \cite{Ols_22}, wonach spezialisierte Attention-Köpfe ICL durch Pattern Matching und Kopieren ermöglichen, hat sich als wichtiger, aber unvollständiger Erklärungsansatz erwiesen. Die systematische Vergleichsstudie von Yin und Steinhardt \cite{YS_25} demonstriert, dass Induction Heads bei Copy-Tasks relevant sind, bei abstrakten Aufgaben jedoch nur einen marginalen Beitrag leisten. Function Vectors, identifiziert durch die methodisch rigorosere Causal Mediation Analysis von Todd et al. \cite{TOD_24}, erklären den Großteil der ICL-Performance bei abstrakten Aufgaben.
+
+Die Beziehung zwischen beiden Mechanismen ist nicht konkurrierend, sondern komplementär mit einer möglichen entwicklungsbezogenen Verbindung. Die asymmetrische Überlappung, bei der viele Function Vector-Köpfe auch als Induction Heads funktionieren, aber nicht umgekehrt \cite{YS_25}, suggeriert eine Transition während des Trainings. Diese Entwicklung ist jedoch nicht deterministisch, wie die Experimente von Sahin et al. \cite{SAH_25} zeigen, die ICL ohne Induction Heads demonstrieren.
+
+Das resultierende Bild ist eines hierarchisch organisierten Systems mit funktionaler Spezialisierung. Induction Heads in frühen Layern verarbeiten lokale Muster und identifizieren relevante Kontextpositionen. Function Vector-Köpfe in späteren Layern bilden abstrakte Repräsentationen und aktivieren gelernte Funktionen. Der Residual Stream \cite{ENO_21} dient als Kommunikationsmedium zwischen beiden Verarbeitungsstufen.
+
+Für die mechanistische Interpretierbarkeit bedeutet diese Analyse, dass die Untersuchung einzelner Mechanismen nicht ausreicht. Das Verständnis von Modellverhalten erfordert die Betrachtung des Zusammenspiels verschiedener spezialisierter Komponenten und ihrer Interaktionen. Die methodische Unterscheidung zwischen Korrelation und Kausalität, demonstriert durch den Unterschied zwischen Ablation und Activation Patching, ist dabei zentral.
+
+Für die breitere KI-Forschung ist die Einsicht bedeutsam, dass scheinbar etablierte Erklärungen durch methodisch rigorosere Analyse revidiert werden können. Die Entwicklung von der Induction Head-Hypothese zu einem differenzierten Verständnis mit Function Vectors illustriert die Notwendigkeit kontinuierlicher kritischer Prüfung in einem sich schnell entwickelnden Feld. Die mechanistische Interpretierbarkeit von Transformern steht, trotz der beschriebenen Fortschritte, am Anfang eines langen Weges zum vollständigen Verständnis dieser Systeme.
+
+% =============================================================================
+% LITERATURVERZEICHNIS
+% =============================================================================
+
+\printbibliography
+
+\end{document}

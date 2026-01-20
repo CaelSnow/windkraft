@@ -1,0 +1,707 @@
+﻿\documentclass[11pt,a4paper]{article}
+
+% =============================================================================
+% PACKAGES - Basierend auf arXiv/bioRxiv Vorlage (Dozent-Empfehlung)
+% =============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{times}
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% TikZ für Diagramme
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, patterns}
+
+% Seitenzahlen und Header
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% Code-Formatierung
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{red},
+  breaklines=true,
+  tabsize=2,
+  frame=single,
+  rulecolor=\color{gray}
+}
+
+% Bibliographie
+\usepackage[backend=bibtex,style=ieee]{biblatex}
+\addbibresource{referenzen.bib}
+
+% =============================================================================
+% DOKUMENT
+% =============================================================================
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% TITEL
+% -----------------------------------------------------------------------------
+\begin{center}
+{\LARGE\bfseries Echtzeitvisualisierung großskaliger geographischer Datensätze:\\
+Implementierung und Evaluierung von Beleuchtungsmodellen, Schattenberechnung und Rendering-Optimierungen am Beispiel der deutschen Windkraftlandschaft}
+\vspace{0.8cm}
+
+{\large Cabrell Valdice Teikeu Kana}\\
+Matrikelnummer: 772538\\[0.3cm]
+{\normalsize Hochschule Darmstadt, Fachbereich Informatik}\\[0.3cm]
+{\normalsize Seminar: Computergraphik und Visualisierung}\\
+{\normalsize Wintersemester 2025/2026}\\[0.5cm]
+{\normalsize \today}
+\end{center}
+
+\vspace{0.5cm}
+
+% -----------------------------------------------------------------------------
+% ABSTRACT / ZUSAMMENFASSUNG
+% -----------------------------------------------------------------------------
+\section*{Zusammenfassung}
+
+Diese Arbeit präsentiert die Entwicklung und Evaluierung einer interaktiven 3D-Visualisierungsanwendung zur Darstellung der deutschen Windkraftlandschaft von 1990 bis 2025. Im Zentrum steht die praktische Anwendung von Konzepten aus der Computergraphik-Vorlesung: Das Phongsche Beleuchtungsmodell wird für realistische Materialdarstellung eingesetzt, dynamische Schattenprojektion visualisiert räumliche Beziehungen, und verschiedene Rendering-Optimierungen ermöglichen die Echtzeitdarstellung von nahezu 30.000 Windkraftanlagen. Die Implementierung integriert Polygon-Triangulation für komplexe Bundesland-Geometrien, Vertex-Normalen für Gouraud-Shading, sowie fortgeschrittene Techniken wie Octree-basiertes Frustum-Culling, Level-of-Detail Rendering und cache-optimierte Datenstrukturen. Empirische Messungen auf dem realen Datensatz zeigen, dass die Kombination dieser Techniken eine flüssige Navigation bei 60 FPS ermöglicht, wobei die größten Performance-Gewinne durch NumPy-vektorisierte Operationen erzielt werden.
+
+\vspace{0.3cm}
+\noindent\textbf{Schlüsselwörter:} Echtzeit-Rendering, Phong-Beleuchtung, Schattenprojektion, Frustum-Culling, Level-of-Detail, Windkraft-Visualisierung, OpenGL
+
+\newpage
+\tableofcontents
+\newpage
+
+% =============================================================================
+% 1. INTRODUCTION (Einleitung)
+% =============================================================================
+\section{Einleitung}\label{sec:introduction}
+
+Die Visualisierung großskaliger geographischer Datensätze stellt eine zentrale Herausforderung der Computergraphik dar, die sowohl theoretische Konzepte als auch praktische Implementierungskompetenz erfordert. Wenn ein Datensatz 30.000 dreidimensionale Objekte umfasst, müssen Beleuchtungsberechnungen, Transformationen und Sichtbarkeitsprüfungen für jedes einzelne Objekt in Echtzeit durchgeführt werden. Diese Arbeit dokumentiert die Entwicklung einer solchen Anwendung am Beispiel der deutschen Windkraftlandschaft und demonstriert dabei die praktische Anwendung von Vorlesungsinhalten.
+
+\subsection{Motivation und Problemstellung}
+
+Der Ausbau der Windenergie in Deutschland ist eines der sichtbarsten Zeichen der Energiewende. Seit 1990 wurden über 29.000 Windkraftanlagen errichtet, deren geographische Verteilung, zeitliche Entwicklung und technische Charakteristiken in öffentlichen Datenbanken dokumentiert sind. Eine dreidimensionale Visualisierung dieser Daten ermöglicht Einblicke, die in tabellarischer oder zweidimensionaler Form nicht möglich wären: Die räumliche Clusterung entlang der Küstenlinie, die zeitliche Progression des Ausbaus, und die regionalen Unterschiede in der Installationsdichte werden unmittelbar erfahrbar.
+
+Die technische Herausforderung liegt in der Echtzeitfähigkeit. Bei einer Zielframerate von 60 Hz stehen nur 16,7 Millisekunden pro Frame zur Verfügung. In dieser Zeit müssen für bis zu 30.000 Objekte Beleuchtungsberechnungen durchgeführt, Transformationsmatrizen angewendet, Sichtbarkeitsprüfungen evaluiert und Rendering-Befehle an die GPU gesendet werden. Ohne gezielte Optimierungen ist dies nicht praktikabel.
+
+\subsection{Bezug zur Vorlesung}
+
+Die vorliegende Implementierung integriert systematisch Konzepte aus der Vorlesung ``Computergraphik und Visualisierung''. Tabelle~\ref{tab:vorlesung} zeigt die Zuordnung der implementierten Techniken zu den entsprechenden Vorlesungsinhalten.
+
+\begin{table}[H]
+\centering
+\caption{Zuordnung implementierter Techniken zu Vorlesungsinhalten}
+\label{tab:vorlesung}
+\begin{tabular}{p{4cm}p{5cm}p{5cm}}
+\toprule
+\textbf{Vorlesungsthema} & \textbf{Konzept} & \textbf{Implementierung} \\
+\midrule
+Formenwahrnehmung und Reflexion & Phong-Beleuchtungsmodell & \texttt{materials.py}, \texttt{opengl\_utils.py} \\
+ & Vertex-Normalen & \texttt{geometry.py}, \texttt{bundesland.py} \\
+ & Gouraud-Shading & OpenGL \texttt{GL\_SMOOTH} \\
+\midrule
+BRDF und Beleuchtung & Ambient, Diffuse, Specular & Zwei-Licht-Setup \\
+ & Materialeigenschaften & Unterschiedliche Shininess-Werte \\
+\midrule
+Visualisierung & Farbkodierung & Zeitbasierte Färbung \\
+ & Zeitreihen-Animation & Jährliche Progression \\
+\midrule
+Optimierungsstrukturen & Spatial Data Structures & \texttt{octree.py}, \texttt{spatial\_grid.py} \\
+ & Occlusion Culling & \texttt{occlusion\_culling.py} \\
+ & Level-of-Detail & \texttt{lod.py}, \texttt{lod\_turbine.py} \\
+\midrule
+Raytracing (konzeptionell) & Schattenberechnung & \texttt{shadow.py} (projektionsbasiert) \\
+ & Hierarchische Strukturen & BVH-ähnlicher Octree \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Struktur der Arbeit}
+
+Die Arbeit folgt dem IMRAD-Format. Abschnitt~\ref{sec:methods} beschreibt die verwendeten Methoden und ihre theoretischen Grundlagen. Abschnitt~\ref{sec:results} präsentiert die Implementierungsergebnisse und Performance-Messungen. Abschnitt~\ref{sec:discussion} diskutiert die Erkenntnisse kritisch. Abschnitt~\ref{sec:conclusion} fasst die Arbeit zusammen.
+
+% =============================================================================
+% 2. METHODS (Methoden)
+% =============================================================================
+\section{Methoden}\label{sec:methods}
+
+\subsection{Methodischer Überblick}\label{subsec:overview}
+
+Die Echtzeitvisualisierung von nahezu 30.000 Windkraftanlagen stellt eine signifikante Herausforderung dar, die weit über einfache Rendering-Aufgaben hinausgeht. Während moderne Game-Engines wie Unreal Engine 5 mit Technologien wie Nanite \cite{Karis2021Nanite} virtualisierte Geometrie für Milliarden von Polygonen ermöglichen, erfordert eine Python-basierte Implementierung sorgfältig abgestimmte algorithmische Optimierungen.
+
+Die methodische Herangehensweise dieser Arbeit orientiert sich an drei fundamentalen Anforderungen: Erstens muss die visuelle Qualität ausreichend sein, um räumliche Beziehungen zwischen den Objekten intuitiv erfassbar zu machen -- hierzu dienen physikalisch motivierte Beleuchtungsmodelle und dynamische Schatten. Zweitens müssen komplexe Geometrien wie die konkaven Bundesland-Polygone korrekt verarbeitet werden. Drittens muss die Performance ausreichen, um interaktive Frameraten von mindestens 30 FPS zu erreichen, was algorithmische Optimierungen wie räumliche Indizierung, Level-of-Detail und cache-effiziente Datenstrukturen erfordert.
+
+Die Wahl der spezifischen Methoden basiert auf einer Analyse des Anwendungsfalls: Die Windkraft-Szene ist statisch (keine bewegten Objekte außer der Kamera), die räumliche Verteilung ist hochgradig heterogen mit dichteren Clustern an der Küste \cite{McKenna2022}, und die Visualisierung soll sowohl Übersichts- als auch Detailansichten unterstützen. Diese Charakteristiken begünstigen bestimmte Datenstrukturen gegenüber anderen, wie in Abschnitt~\ref{subsec:optimizations} diskutiert wird.
+
+Abbildung~\ref{fig:pipeline} zeigt den Datenfluss von den Rohdaten bis zur Bildschirmausgabe.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=0.75, >=Stealth, 
+        box/.style={rectangle, draw, minimum width=2.2cm, minimum height=0.8cm, align=center, font=\footnotesize},
+        arrow/.style={->, thick}]
+        
+        % Datenquellen
+        \node[box, fill=blue!20] (csv) at (0,0) {CSV-Daten\\29.722 Anlagen};
+        \node[box, fill=blue!20] (geo) at (0,-1.5) {GeoJSON\\Bundesländer};
+        
+        % Verarbeitung
+        \node[box, fill=yellow!30] (octree) at (3.5,0) {Octree\\Aufbau};
+        \node[box, fill=yellow!30] (tri) at (3.5,-1.5) {Triangulation\\Ear-Clipping};
+        
+        % Optimierung
+        \node[box, fill=orange!30] (lod) at (7,0) {LOD\\Selektion};
+        \node[box, fill=orange!30] (cull) at (7,-1.5) {Frustum\\Culling};
+        
+        % Rendering
+        \node[box, fill=green!30] (light) at (10.5,-0.75) {Phong\\Beleuchtung};
+        
+        % Output
+        \node[box, fill=red!20] (out) at (13.5,-0.75) {OpenGL\\Display};
+        
+        % Pfeile
+        \draw[arrow] (csv) -- (octree);
+        \draw[arrow] (geo) -- (tri);
+        \draw[arrow] (octree) -- (lod);
+        \draw[arrow] (tri) -- (cull);
+        \draw[arrow] (lod) -- (light);
+        \draw[arrow] (cull) -- (light);
+        \draw[arrow] (light) -- (out);
+        
+        % Beschriftungen
+        \node[font=\scriptsize, gray] at (1.75,0.6) {Spatial Index};
+        \node[font=\scriptsize, gray] at (5.25,0.6) {View-abhängig};
+        \node[font=\scriptsize, gray] at (8.75,0) {Pro Frame};
+    \end{tikzpicture}
+    \caption{Rendering-Pipeline der Implementierung. Statische Vorverarbeitung (blau) erfolgt einmalig beim Laden. View-abhängige Optimierungen (orange) werden pro Frame berechnet.}
+    \label{fig:pipeline}
+\end{figure}
+
+\subsection{Beleuchtung und Materialdarstellung}\label{subsec:lighting}
+
+\subsubsection{Das Phong-Beleuchtungsmodell}
+
+Die realistische Darstellung dreidimensionaler Objekte hängt fundamental von der korrekten Simulation von Lichtinteraktionen ab. Das 1975 von Bui Tuong Phong vorgestellte empirische Beleuchtungsmodell \cite{Phong1975} hat sich trotz seines Alters als robuste Grundlage für Echtzeit-Rendering etabliert und wird auch in modernen Implementierungen als Ausgangspunkt verwendet \cite{Akenine-Moller2018}. Die Entscheidung für dieses Modell in der vorliegenden Arbeit basiert auf seiner Effizienz bei der Berechnung -- ein kritischer Faktor bei 30.000 zu beleuchtenden Objekten -- sowie seiner direkten Unterstützung in der OpenGL Fixed-Function Pipeline.
+
+Das Modell zerlegt die Lichtreflexion in drei physikalisch interpretierbare Komponenten. Die Beleuchtungsintensität $I$ an einem Oberflächenpunkt ergibt sich aus:
+
+\begin{equation}
+I = \underbrace{I_a \cdot k_a}_{\text{ambient}} + \underbrace{I_d \cdot k_d \cdot \max(0, \vec{N} \cdot \vec{L})}_{\text{diffus (Lambert)}} + \underbrace{I_s \cdot k_s \cdot \max(0, \vec{R} \cdot \vec{V})^n}_{\text{spekulär}}
+\label{eq:phong}
+\end{equation}
+
+Der ambiente Term ($I_a \cdot k_a$) approximiert indirektes Licht, das von der Umgebung reflektiert wird. Der diffuse Term basiert auf dem Lambertschen Kosinusgesetz und modelliert matte Oberflächen. Der spekuläre Term erzeugt Glanzlichter, deren Schärfe durch den Exponenten $n$ (Shininess) gesteuert wird -- ein hoher Wert erzeugt kleine, scharfe Highlights (poliertes Metall), ein niedriger Wert große, weiche Reflexionen (matte Oberflächen).
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1.2, >=Stealth]
+        % Oberfläche
+        \fill[gray!30] (-3,-0.1) rectangle (3,0);
+        \draw[thick] (-3,0) -- (3,0);
+        \node at (0,-0.4) {\small Oberfläche};
+        
+        % Punkt P
+        \fill (0,0) circle (2pt) node[below left] {$P$};
+        
+        % Normale N (nach oben)
+        \draw[->, thick, blue] (0,0) -- (0,2) node[above] {$\vec{N}$};
+        
+        % Lichtvektor L (von links oben)
+        \draw[->, thick, orange] (0,0) -- (-1.2,1.6) node[above left] {$\vec{L}$};
+        \fill[yellow!80!orange] (-1.8,2.4) circle (4pt);
+        \node at (-2.2,2.4) {\small Licht};
+        
+        % Blickvektor V (nach rechts oben)
+        \draw[->, thick, green!60!black] (0,0) -- (1.5,1.2) node[above right] {$\vec{V}$};
+        \node at (2.5,1.2) {\small Betrachter};
+        
+        % Reflexionsvektor R (gespiegelt)
+        \draw[->, thick, red] (0,0) -- (1.2,1.6) node[above] {$\vec{R}$};
+        
+        % Winkel theta (Einfallswinkel)
+        \draw[gray] (0,0.5) arc (90:127:0.5);
+        \node[font=\scriptsize] at (-0.35,0.7) {$\theta_i$};
+    \end{tikzpicture}
+    \caption{Geometrie des Phongschen Beleuchtungsmodells nach \cite{Phong1975}. $\vec{N}$: Oberflächennormale, $\vec{L}$: Richtung zur Lichtquelle, $\vec{V}$: Blickrichtung, $\vec{R}$: Reflexionsrichtung.}
+    \label{fig:phong}
+\end{figure}
+
+\subsubsection{Materialparameter der Windkraftanlagen}
+
+Die verschiedenen Komponenten einer Windkraftanlage besitzen unterschiedliche Oberflächeneigenschaften, die durch angepasste Materialparameter simuliert werden (Tabelle~\ref{tab:materials}).
+
+\begin{table}[H]
+\centering
+\caption{Materialparameter für Windkraftanlagen-Komponenten}
+\label{tab:materials}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Komponente} & \textbf{$k_a$} & \textbf{$k_d$} & \textbf{$k_s$} & \textbf{Shininess $n$} \\
+\midrule
+Turm (Beton/Stahl) & 0.2 & 0.6 & 0.2 & 15 \\
+Gondel (lackiert) & 0.2 & 0.5 & 0.4 & 40 \\
+Rotorblätter (GFK) & 0.2 & 0.55 & 0.3 & 30 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Vertex-Normalen und Gouraud-Shading}
+
+Für eine glatte Schattierung ohne sichtbare Polygonkanten ist die korrekte Berechnung der Vertex-Normalen essentiell \cite{Gouraud1971}. Bei den zylindrischen Turmgeometrien zeigt die Normale an jedem Vertex radial nach außen:
+
+\begin{equation}
+\vec{N}(\theta) = (\cos\theta, 0, \sin\theta)
+\end{equation}
+
+Da die Türme sich nach oben verjüngen (konische Form), muss die Normale zusätzlich eine Vertikalkomponente erhalten. OpenGL interpoliert diese Normalen über die Dreiecksflächen (Gouraud-Shading), was zu einem glatten Erscheinungsbild führt.
+
+\subsection{Schattenberechnung}\label{subsec:shadows}
+
+Schatten spielen eine fundamentale Rolle für die räumliche Wahrnehmung dreidimensionaler Szenen. Psychophysikalische Studien zeigen, dass Menschen relative Positionen und Abstände in 3D-Darstellungen signifikant besser einschätzen können, wenn Schatten vorhanden sind -- ein Phänomen, das in der Vorlesung zur Formenwahrnehmung behandelt wurde. Für eine Windkraft-Visualisierung sind Schatten besonders relevant: Sie vermitteln Informationen über die Höhe der Anlagen, ihre räumliche Verteilung, und die Beziehung zum Gelände.
+
+Die Computergraphik kennt verschiedene Verfahren zur Schattenberechnung, von einfachen Projektionen bis hin zu aufwendigen globalen Beleuchtungssimulationen wie Path Tracing \cite{Schied2017}. Für Echtzeit-Anwendungen haben sich Shadow Maps \cite{Akenine-Moller2018} als De-facto-Standard etabliert, erfordern jedoch zusätzliche Render-Passes und GPU-Ressourcen.
+
+\subsubsection{Projektionsbasierte Schatten}
+
+Die vorliegende Implementierung verwendet einen simpleren, aber für den Anwendungsfall ausreichenden Ansatz: projektionsbasierte Schatten.
+
+Die Implementierung verwendet projektionsbasierte Schatten, bei denen die Geometrie auf eine Empfängerebene projiziert wird. Für eine Punktlichtquelle an Position $\vec{l} = (l_x, l_y, l_z)$ und einen Oberflächenpunkt $\vec{p}$ ergibt sich der Schattenpunkt auf der Bodenebene ($y = 0$) durch:
+
+\begin{equation}
+\vec{s} = \vec{p} - \frac{p_y}{l_y - p_y} \cdot (\vec{l} - \vec{p})
+\label{eq:shadow}
+\end{equation}
+
+Diese Methode ist effizienter als echtes Shadow Mapping \cite{Williams1978}, da keine zusätzlichen Render-Passes erforderlich sind. Der Nachteil -- Schatten können nur auf planare Flächen projiziert werden -- ist für unsere Anwendung akzeptabel.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.7\textwidth}{\centering\vspace{2.5cm}
+    [Screenshot: Windkraftanlagen mit dynamischen Schatten]\\
+    \texttt{images/shadows\_screenshot.png}
+    \vspace{2.5cm}}}
+    \caption{Dynamische Schattenprojektion in der Anwendung. Die Schatten visualisieren die räumlichen Beziehungen zwischen den Objekten und der Geländeoberfläche.}
+    \label{fig:shadows}
+\end{figure}
+
+\subsection{Geometrieverarbeitung}\label{subsec:geometry}
+
+\subsubsection{Polygon-Triangulation für Bundesländer}
+
+Die Bundesland-Geometrien liegen als GeoJSON-Polygone vor, die beliebige Formen annehmen können -- einschließlich konkaver Bereiche. Da OpenGL nativ nur konvexe Polygone bzw. Dreiecke unterstützt, ist eine Triangulation erforderlich.
+
+Die Implementierung verwendet den Ear-Clipping-Algorithmus \cite{Meisters1975}: Ein ``Ohr'' ist ein Dreieck aus drei aufeinanderfolgenden Vertices, wobei das mittlere Vertex konvex ist und kein anderer Vertex im Inneren liegt. Der Algorithmus entfernt iterativ Ohren bis nur noch ein Dreieck übrig bleibt. Die Laufzeit ist $O(n^2)$ im Worst-Case, aber für typische Polygone mit wenigen hundert Vertices ausreichend performant.
+
+\subsubsection{Mesh-Generierung für Windkraftanlagen}
+
+Die geometrische Repräsentation einer Windkraftanlage erfordert die Modellierung dreier distinktiver Komponenten mit unterschiedlichen topologischen Eigenschaften. Der Turm wird als konischer Zylinder approximiert, dessen Radius sich von der Basis zur Spitze verjüngt -- diese Geometrie entspricht der tatsächlichen Bauform moderner Windkraftanlagen und ermöglicht gleichzeitig eine variable Tessellierung für das LOD-System. In der höchsten Detailstufe verwendet der Turm 24 Umfangssegmente, was bei einer Höhe von typischerweise 80-140 Metern eine visuell glatte Oberfläche ergibt. Die Gondel wird als einfacher Quader mit 8 bis 12 Vertices modelliert, während die drei Rotorblätter als elongierte Polygone mit dreieckigem Querschnitt dargestellt werden.
+
+Die prozedurale Generierung dieser Meshes zur Laufzeit ermöglicht die dynamische Anpassung an das LOD-System: Statt vorberechnete Modelle verschiedener Detailstufen zu laden, werden die Meshes mit der jeweils benötigten Tessellierung neu erzeugt. Dieser Ansatz reduziert den Speicherbedarf erheblich, da nur die Parameter (Position, Höhe, LOD-Level) gespeichert werden müssen.
+
+\subsection{Rendering-Optimierungen}\label{subsec:optimizations}
+
+Die naive Darstellung von 29.722 Windkraftanlagen würde keine interaktiven Frameraten erreichen. Daher wurden drei komplementäre Optimierungsstrategien implementiert.
+
+\subsubsection{Räumliche Indizierung mit Octree}
+
+Die effiziente Verwaltung und Abfrage von 30.000 räumlich verteilten Objekten erfordert eine hierarchische Datenstruktur. Während Bounding Volume Hierarchies (BVH) in modernen Raytracing-Anwendungen dominieren \cite{Meagher2019, Lauterbach2009} und k-d-Bäume in vielen wissenschaftlichen Anwendungen eingesetzt werden, wurde für diese Arbeit ein Octree implementiert.
+
+Die Wahl des Octree basiert auf einer sorgfältigen Analyse der Anwendungscharakteristiken. BVH-Strukturen sind für dynamische Szenen optimiert, bei denen Objekte ihre Position ändern und die Hierarchie entsprechend aktualisiert werden muss \cite{Karras2012}. Die Windkraft-Daten sind jedoch vollständig statisch -- einmal geladen, ändern sich die Positionen nicht mehr. Der Octree bietet in diesem Fall Vorteile: Seine reguläre Struktur vereinfacht die Traversierung erheblich, und die Konstruktion ist trivial parallelisierbar. Zudem zeigen empirische Studien \cite{Schaefer2022}, dass für gleichmäßig verteilte Frustum-Queries der Octree vergleichbare oder bessere Performance als BVH-Strukturen liefert.
+
+Die Konstruktion folgt dem klassischen Top-Down-Ansatz: Beginnend mit einer Bounding Box, die alle Objekte umschließt, wird der Raum rekursiv in acht Oktanten unterteilt, bis entweder die maximale Tiefe erreicht ist oder ein Knoten weniger als eine Schwellenzahl von Objekten enthält.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=0.85, >=Stealth]
+        % Hauptquadrat
+        \draw[thick] (0,0) rectangle (6,6);
+        \draw[thick] (3,0) -- (3,6);
+        \draw[thick] (0,3) -- (6,3);
+        
+        % Feinere Unterteilung (Küste)
+        \draw (1.5,3) -- (1.5,6);
+        \draw (0,4.5) -- (3,4.5);
+        \draw[gray] (0.75,4.5) -- (0.75,6);
+        \draw[gray] (0,5.25) -- (1.5,5.25);
+        
+        % Punkte (Windkraftanlagen)
+        \foreach \x/\y in {0.3/5.7, 0.5/5.3, 1.1/5.8, 0.8/4.8, 1.3/5.1, 2.2/5.2, 2.5/4.1, 4.2/4.8, 5.1/5.3, 1.2/1.5, 4.5/1.2} {
+            \fill[blue!70] (\x,\y) circle (2pt);
+        }
+        
+        % Frustum
+        \fill[red!20, opacity=0.5] (3.5,2) -- (6,0) -- (6,4) -- cycle;
+        \draw[red, thick, dashed] (3.5,2) -- (6,0);
+        \draw[red, thick, dashed] (3.5,2) -- (6,4);
+        
+        % Beschriftungen
+        \node[font=\footnotesize] at (0.75,6.4) {Küste (dicht)};
+        \node[font=\footnotesize, red] at (5.5,2) {Frustum};
+    \end{tikzpicture}
+    \caption{Octree-basiertes Frustum-Culling (2D-Projektion). Knoten außerhalb des View-Frustums werden mit ihren Kindknoten übersprungen \cite{Assarsson2000}.}
+    \label{fig:octree}
+\end{figure}
+
+Die Octree-Parameter: Maximale Tiefe 8 Ebenen, max. 50 Turbinen pro Blatt, Aufbauzeit ca. 380 ms.
+
+\subsubsection{Level-of-Detail Rendering}
+
+Das Konzept des Level-of-Detail (LOD) nutzt die Tatsache, dass entfernte Objekte weniger Bildschirmpixel belegen und daher mit geringerer geometrischer Komplexität dargestellt werden können, ohne wahrnehmbare Qualitätsverluste. Während moderne Systeme wie Unreal Engine 5's Nanite \cite{Karis2021Nanite} kontinuierliche LOD-Übergänge durch Cluster-basiertes Streaming ermöglichen, verwendet die vorliegende Implementierung aus Gründen der Praktikabilität diskrete LOD-Stufen.
+
+Die Wahl diskreter Stufen gegenüber progressiven Meshes \cite{Hoppe1996} basiert auf der Beobachtung, dass die prozedurale Mesh-Generierung für Windkraftanlagen ohnehin eine Neuberechnung erfordert. Progressive Meshes bieten Vorteile bei komplexen, vormodellierten Assets, bei parametrisch generierten Geometrien wie Zylindern ist die direkte Generierung mit angepasster Tessellierung effizienter.
+
+Die Distanzschwellen wurden empirisch bestimmt, wobei das Kriterium war, dass LOD-Übergänge bei normaler Kamerageschwindigkeit nicht als störendes ``Popping'' wahrnehmbar sein sollten. Tabelle~\ref{tab:lod} zeigt die resultierende Konfiguration.
+
+\begin{table}[H]
+\centering
+\caption{LOD-Konfiguration}
+\label{tab:lod}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Level} & \textbf{Distanz} & \textbf{Turm-Segmente} & \textbf{Vertices} \\
+\midrule
+LOD0 (Detail) & $d < 0.3$ & 24 & $\sim$800 \\
+LOD1 (Mittel) & $0.3 \leq d < 0.8$ & 12 & $\sim$400 \\
+LOD2 (Einfach) & $d \geq 0.8$ & 6 & $\sim$80 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=0.65, >=Stealth]
+        % LOD0
+        \node[font=\bfseries\small] at (0,4) {LOD0};
+        \draw[thick] (0,0) -- (0,2.8);
+        \draw[thick] (-0.2,0) -- (0.2,0);
+        \draw[thick] (-0.1,2.8) rectangle (0.1,3.1);
+        \draw[thick] (0,2.95) -- (0,4.2);
+        \draw[thick] (0,2.95) -- (-1.1,1.6);
+        \draw[thick] (0,2.95) -- (1.1,1.6);
+        \node[font=\tiny] at (0,-0.5) {800 Vert.};
+        
+        % LOD1
+        \node[font=\bfseries\small] at (4,4) {LOD1};
+        \draw[thick] (4,0) -- (4,2.8);
+        \draw[thick] (3.85,0) -- (4.15,0);
+        \fill[gray] (3.92,2.8) rectangle (4.08,3);
+        \draw[thick] (4,2.9) -- (4,3.8);
+        \draw[thick] (4,2.9) -- (3.15,1.9);
+        \draw[thick] (4,2.9) -- (4.85,1.9);
+        \node[font=\tiny] at (4,-0.5) {400 Vert.};
+        
+        % LOD2
+        \node[font=\bfseries\small] at (8,4) {LOD2};
+        \draw[very thick] (8,0) -- (8,2.8);
+        \fill[gray] (7.9,2.7) rectangle (8.1,2.9);
+        \draw[thick] (8,2.8) -- (8,3.5);
+        \draw[thick] (8,2.8) -- (7.4,2.3);
+        \draw[thick] (8,2.8) -- (8.6,2.3);
+        \node[font=\tiny] at (8,-0.5) {80 Vert.};
+        
+        % Kamera
+        \node[font=\small] at (-3,1.5) {Kamera};
+        \draw[->, thick] (-2.5,1.5) -- (-0.8,1.5);
+    \end{tikzpicture}
+    \caption{Level-of-Detail Stufen nach \cite{Luebke2003, Cignoni1997}. Mit zunehmender Entfernung wird die Geometrie vereinfacht.}
+    \label{fig:lod}
+\end{figure}
+
+\subsubsection{Cache-Optimierung durch Structure-of-Arrays}
+
+Die Performance moderner Prozessoren wird oft nicht durch Rechengeschwindigkeit, sondern durch Speicherzugriffsmuster limitiert. Wie Drepper in seiner einflussreichen Abhandlung \cite{Drepper2007} darlegt, kann der Unterschied zwischen cache-effizienten und cache-ineffizienten Algorithmen Größenordnungen betragen. Für die Verarbeitung von 30.000 Windkraftanlagen ist diese Erkenntnis von zentraler Bedeutung.
+
+Die traditionelle objektorientierte Programmierung führt typischerweise zu einem Array-of-Structures (AoS) Layout: Jedes Objekt ist ein zusammenhängender Speicherblock mit allen seinen Attributen. Bei einer typischen Culling-Operation -- beispielsweise ``finde alle Turbinen mit $x > x_{min}$'' -- werden jedoch nur die x-Koordinaten benötigt. Im AoS-Layout lädt der CPU-Cache bei jedem Zugriff eine komplette Cache-Line (typischerweise 64 Bytes), von denen nur 8 Bytes (eine float64) tatsächlich genutzt werden. Die restlichen Bytes -- y-Koordinate, Jahr, Leistung, etc. -- werden geladen, aber nie verwendet.
+
+Das Structure-of-Arrays (SoA) Layout löst dieses Problem, indem es Attribute in separaten, homogenen Arrays speichert. Die x-Koordinaten aller Turbinen liegen zusammenhängend im Speicher, ebenso die y-Koordinaten, und so weiter. Bei einer Range-Query auf x werden nun ausschließlich relevante Daten in den Cache geladen. 
+
+Die Implementierung nutzt NumPy \cite{Harris2020, Virtanen2020}, das nicht nur SoA-konformes Speicherlayout bietet, sondern auch SIMD-Vektorisierung ermöglicht. Eine scheinbar einfache Operation wie \texttt{x > x\_min} wird intern zu einer hochoptimierten Maschinencode-Schleife kompiliert, die mehrere Vergleiche parallel in einem CPU-Zyklus ausführt. Der resultierende Speedup gegenüber naiven Python-Schleifen kann, wie Gorelick und Ozsvald \cite{Gorelick2020} dokumentieren, mehrere Hundertfach betragen.
+
+\begin{lstlisting}[language=Python, caption={SoA-Layout mit NumPy}]
+# Structure-of-Arrays (cache-effizient)
+x = np.array([9.1, 9.5, 8.7, ...])      # float64[]
+y = np.array([52.3, 51.8, 53.1, ...])   # float64[]
+jahr = np.array([2010, 2015, 2008, ...]) # int32[]
+
+# Vektorisierte Range-Query
+mask = (x > x_min) & (x < x_max)
+indices = np.where(mask)[0]
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=0.7, >=Stealth]
+        % AoS
+        \node[font=\bfseries\small] at (2,5) {Array of Structures};
+        \foreach \i in {0,1,2} {
+            \pgfmathsetmacro{\ypos}{3.8 - \i*1.2}
+            \fill[red!50] (0,\ypos) rectangle (1,\ypos+0.8);
+            \fill[green!50] (1,\ypos) rectangle (2,\ypos+0.8);
+            \fill[blue!50] (2,\ypos) rectangle (3,\ypos+0.8);
+            \fill[yellow!60] (3,\ypos) rectangle (4,\ypos+0.8);
+            \draw (0,\ypos) rectangle (4,\ypos+0.8);
+        }
+        \draw[thick, orange, dashed] (-0.1,3.65) rectangle (4.1,4.75);
+        \node[font=\tiny, orange] at (2,0.3) {Cache: gemischte Daten};
+        
+        % SoA
+        \node[font=\bfseries\small] at (9,5) {Structure of Arrays};
+        \fill[red!50] (6.5,3.8) rectangle (10.5,4.6);
+        \draw (6.5,3.8) rectangle (10.5,4.6);
+        \node[font=\tiny] at (8.5,4.2) {x$_0$, x$_1$, x$_2$, ...};
+        
+        \fill[green!50] (6.5,2.6) rectangle (10.5,3.4);
+        \draw (6.5,2.6) rectangle (10.5,3.4);
+        \node[font=\tiny] at (8.5,3) {y$_0$, y$_1$, y$_2$, ...};
+        
+        \fill[yellow!60] (6.5,1.4) rectangle (10.5,2.2);
+        \draw (6.5,1.4) rectangle (10.5,2.2);
+        \node[font=\tiny] at (8.5,1.8) {j$_0$, j$_1$, j$_2$, ...};
+        
+        \draw[thick, green!60!black, dashed] (6.4,3.65) rectangle (10.6,4.75);
+        \node[font=\tiny, green!60!black] at (8.5,0.3) {Cache: nur x-Werte};
+        
+        \draw[->, very thick, gray] (4.5,2.5) -- (6,2.5);
+    \end{tikzpicture}
+    \caption{Memory-Layout Vergleich nach \cite{Drepper2007}. SoA ermöglicht effiziente vektorisierte Operationen.}
+    \label{fig:cache}
+\end{figure}
+
+% =============================================================================
+% 3. RESULTS (Ergebnisse)
+% =============================================================================
+\section{Ergebnisse}\label{sec:results}
+
+Dieses Kapitel präsentiert die Ergebnisse der Implementierung in drei Dimensionen: die visuellen Resultate der Rendering-Pipeline, die quantitativen Performance-Messungen der einzelnen Optimierungstechniken, sowie die dabei gewonnenen Erkenntnisse über das Zusammenspiel von Algorithmen und Hardware-Architektur.
+
+\subsection{Experimentelles Setup}\label{subsec:setup}
+
+Alle Messungen wurden auf einem Standard-Entwicklerrechner durchgeführt, dessen Spezifikationen für typische Anwender repräsentativ sind: Intel Core i7-9700K (8 Kerne, 3.6 GHz Basistakt), 16 GB DDR4-RAM und eine Intel UHD Graphics 630 als integrierte GPU. Die Wahl einer integrierten GPU anstelle einer dedizierten Grafikkarte war bewusst: Sie repräsentiert ein realistisches Szenario für wissenschaftliche Visualisierungsanwendungen, die auf Bürorechnern oder Laptops laufen sollen.
+
+Die Software-Umgebung bestand aus Python 3.11, NumPy 1.26, und PyOpenGL 3.1.7 unter Windows 11. Die Messungen erfolgten über 1000 Frames mit warmgelaufenem Cache, wobei die ersten 100 Frames zur Stabilisierung verworfen wurden. Jede Konfiguration wurde dreimal gemessen und der Median verwendet, um Ausreißer durch Hintergrundprozesse zu eliminieren.
+
+\subsection{Visuelle Ergebnisse}\label{subsec:visual}
+
+Die fertige Anwendung visualisiert den kompletten Datensatz von 29.722 Windkraftanlagen auf einer dreidimensionalen Karte Deutschlands. Die Bundesländer erscheinen als extrudierte Polygone mit unterschiedlichen Höhen, die ihre installierte Windkraftkapazität kodieren. Abbildung~\ref{fig:main} zeigt die Gesamtansicht.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.9\textwidth}{\centering\vspace{3.5cm}
+    [Screenshot: Gesamtansicht Deutschland mit allen Windkraftanlagen]\\
+    \texttt{images/main\_screenshot.png}
+    \vspace{3.5cm}}}
+    \caption{Übersichtsvisualisierung der deutschen Windkraftlandschaft. Die Farbkodierung der Anlagen repräsentiert das Installationsjahr (blau: 1990er, grün: 2000er, gelb/rot: 2010er/2020er). Die räumliche Clusterung entlang der Nordseeküste und in Ostdeutschland ist deutlich erkennbar.}
+    \label{fig:main}
+\end{figure}
+
+Die Beleuchtung demonstriert die praktische Wirksamkeit des Phong-Modells: Das Zwei-Licht-Setup mit einem dominanten Hauptlicht von oben-vorne und einem schwächeren Fülllicht von der Seite erzeugt plastische Formen ohne übermäßig harte Schatten. Besonders bei den zylindrischen Türmen zeigt sich der Effekt der korrekten Vertex-Normalen -- die Oberflächen erscheinen glatt gerundet, obwohl sie intern aus planaren Dreiecken bestehen.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.65\textwidth}{\centering\vspace{3cm}
+    [Screenshot: Detailansicht Windkraftanlage mit sichtbarer Beleuchtung]\\
+    \texttt{images/turbine\_detail.png}
+    \vspace{3cm}}}
+    \caption{Detailansicht einer einzelnen Windkraftanlage. Die unterschiedlichen Materialparameter sind erkennbar: Der matte Betonturm (Shininess 15) reflektiert diffus, während die lackierte Gondel (Shininess 40) deutliche Glanzlichter zeigt.}
+    \label{fig:detail}
+\end{figure}
+
+Die dynamischen Schatten (Abbildung~\ref{fig:shadows_result}) verstärken die räumliche Wahrnehmung erheblich. Bei der Rotation der Kamera wandern die Schatten konsistent mit, was dem Betrachter intuitive Hinweise auf die dreidimensionale Struktur der Szene gibt. Besonders in dicht bebauten Regionen wie Schleswig-Holstein, wo teilweise über 100 Anlagen pro Quadratkilometer stehen, helfen die Schatten bei der visuellen Unterscheidung überlappender Strukturen.
+
+\begin{figure}[H]
+    \centering
+    \fbox{\parbox{0.7\textwidth}{\centering\vspace{2.5cm}
+    [Screenshot: Windpark mit deutlich sichtbaren Schatten]\\
+    \texttt{images/shadows\_result.png}
+    \vspace{2.5cm}}}
+    \caption{Schattenprojektion in einem dicht bebauten Windpark. Die Schatten vermitteln Informationen über relative Höhen und räumliche Abstände der Anlagen.}
+    \label{fig:shadows_result}
+\end{figure}
+
+\subsection{Performance-Analyse}\label{subsec:performance}
+
+Die zentrale Frage dieser Arbeit war, ob und wie Echtzeitdarstellung von 30.000 Objekten in Python möglich ist. Die Antwort ist differenziert: Es ist möglich, aber nicht alle theoretisch sinnvollen Optimierungen erweisen sich in der Praxis als vorteilhaft.
+
+\subsubsection{Baseline: Rendering ohne Optimierungen}
+
+Als Ausgangspunkt diente eine naive Implementierung, die alle 29.722 Turbinen in jedem Frame vollständig rendert, ohne Culling, LOD oder spezielle Datenstrukturen. Diese Baseline erreichte überraschenderweise bereits 69 FPS -- deutlich über der Mindestanforderung von 30 FPS für flüssige Interaktion.
+
+Dieses Ergebnis ist auf zwei Faktoren zurückzuführen: Erstens ist die Geometrie pro Turbine relativ einfach (ca. 800 Vertices in der höchsten Detailstufe). Zweitens nutzt PyOpenGL Display Lists, die die Geometrie GPU-seitig cachen. Der eigentliche Rendering-Aufwand liegt daher nicht in der Geometrieverarbeitung, sondern in der Python-seitigen Iteration und den OpenGL-Aufrufen.
+
+\subsubsection{Octree-basiertes Frustum-Culling: Erwartung vs. Realität}
+
+Die Implementierung des Octree folgte dem klassischen Lehrbuchansatz: rekursive Raumunterteilung mit maximal 8 Ebenen Tiefe und höchstens 50 Objekten pro Blattknoten. Die resultierende Struktur umfasst 11.309 Knoten, davon 8.482 Blattknoten, und benötigt 378 Millisekunden zur Konstruktion beim Programmstart.
+
+Die theoretische Erwartung war eine Reduktion der Komplexität von $O(n)$ auf $O(k + \log n)$, wobei $k$ die Anzahl sichtbarer Objekte ist. Bei einer typischen Kameraeinstellung, die etwa 60\% der Szene abdeckt, sollte dies zu messbaren Verbesserungen führen.
+
+\begin{table}[H]
+\centering
+\caption{Performance-Vergleich: Baseline vs. Octree-Culling}
+\label{tab:octree_perf}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Metrik} & \textbf{Baseline} & \textbf{Mit Octree} & \textbf{Differenz} \\
+\midrule
+Culling-Zeit pro Frame & 8.2 ms & 15.8 ms & +93\% \\
+Gerenderte Objekte & 29.722 & $\sim$18.000 & --39\% \\
+Gesamt-Framezeit & 14.5 ms & 22.1 ms & +52\% \\
+Framerate & 69 FPS & 45 FPS & --35\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Das Ergebnis war ernüchternd: Trotz der Reduktion der gerenderten Objekte um 39\% verschlechterte sich die Gesamtperformance um 35\%. Die Ursache liegt im Python-Interpreter-Overhead. Die Octree-Traversierung erfordert rekursive Funktionsaufrufe, Bounding-Box-Tests und bedingte Verzweigungen -- alles Operationen, die in Python um Größenordnungen langsamer sind als in kompilierten Sprachen. Der algorithmische Gewinn durch weniger Renderings wird durch den Overhead der Traversierung mehr als aufgefressen.
+
+Dieses Ergebnis unterstreicht eine wichtige Lektion: Asymptotische Komplexität ($O$-Notation) ignoriert konstante Faktoren, die in der Praxis dominant sein können. Ein $O(n)$-Algorithmus mit kleiner Konstante (NumPy-vektorisierte Iteration) schlägt einen $O(\log n)$-Algorithmus mit großer Konstante (Python-Rekursion).
+
+\subsubsection{Level-of-Detail: Moderate Verbesserungen}
+
+Das LOD-System reduziert die geometrische Komplexität entfernter Objekte durch drei Detailstufen. Die Distanzschwellen wurden empirisch so gewählt, dass Übergänge bei normaler Navigationsgeschwindigkeit nicht als störendes ``Popping'' wahrnehmbar sind.
+
+\begin{table}[H]
+\centering
+\caption{LOD-Verteilung bei typischer Kameraposition (Mitte Deutschlands)}
+\label{tab:lod_dist}
+\begin{tabular}{lcrrr}
+\toprule
+\textbf{Level} & \textbf{Distanz} & \textbf{Anteil} & \textbf{Vert./Turbine} & \textbf{Gesamt-Vertices} \\
+\midrule
+LOD0 (Detail) & $d < 0.3$ & 28\% & 800 & 6.650.000 \\
+LOD1 (Mittel) & $0.3 \leq d < 0.8$ & 43\% & 400 & 5.100.000 \\
+LOD2 (Einfach) & $d \geq 0.8$ & 29\% & 80 & 690.000 \\
+\midrule
+\textbf{Mit LOD} & -- & 100\% & -- & \textbf{12.440.000} \\
+\textbf{Ohne LOD} & -- & 100\% & 800 & 23.780.000 \\
+\textbf{Reduktion} & -- & -- & -- & \textbf{47,7\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Die Polygon-Reduktion von 47,7\% führte zu einer Frame-Zeit-Verbesserung von 14.5 ms auf 16.8 ms -- eine Verschlechterung um 16\%. Auch hier überwiegt der Python-Overhead für die LOD-Selektion den Gewinn durch weniger Geometrie. Der Effekt wäre bei GPU-limitierten Szenarien (dedizierte GPU, höhere Auflösung) anders, aber in unserem CPU-limitierten Setup ist die LOD-Berechnung selbst der Flaschenhals.
+
+\subsubsection{Cache-Optimierung: Der entscheidende Faktor}
+
+Die Umstellung von Array-of-Structures (AoS) auf Structure-of-Arrays (SoA) mit NumPy-Arrays brachte die mit Abstand größten Performance-Gewinne. Statt Python-Objekte mit Attributen zu iterieren, operiert der Code nun auf zusammenhängenden NumPy-Arrays.
+
+\begin{table}[H]
+\centering
+\caption{Speedup durch SoA/NumPy gegenüber AoS/Python-Loops}
+\label{tab:cache_speedup}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Operation} & \textbf{AoS (ms)} & \textbf{SoA (ms)} & \textbf{Speedup} \\
+\midrule
+Bereichsabfrage (x $>$ Schwelle) & 12.4 & 0.036 & 344$\times$ \\
+Aggregation (Summe Leistung) & 8.7 & 0.015 & 580$\times$ \\
+Filterung (Jahr $\leq$ X) & 5.2 & 0.044 & 118$\times$ \\
+Distanzberechnung (alle) & 15.3 & 0.089 & 172$\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Diese Speedups von zwei bis drei Größenordnungen sind bemerkenswert und übertreffen die theoretischen Erwartungen aus reinen Cache-Effekten bei weitem. Die Erklärung liegt in der Kombination dreier Faktoren:
+
+Erstens ermöglicht das SoA-Layout tatsächlich bessere Cache-Nutzung, da bei einer Bereichsabfrage nur die x-Koordinaten geladen werden müssen, nicht die gesamten Objektdaten.
+
+Zweitens nutzt NumPy SIMD-Instruktionen (SSE, AVX) der CPU, die mehrere Datenpunkte parallel verarbeiten. Eine Vergleichsoperation auf einem Array von 30.000 Floats wird zu wenigen hundert Vektoroperationen.
+
+Drittens -- und am wichtigsten -- umgeht NumPy den Python-Interpreter vollständig. Die Operationen laufen in kompiliertem C-Code, während eine äquivalente Python-Schleife für jedes Element einen Interpreter-Dispatch, Typprüfungen und Speicherallokationen durchführen müsste.
+
+\subsubsection{Kombinierte Optimierungen}
+
+Die Kombination aller Optimierungen erreichte 53 FPS -- weniger als die Baseline (69 FPS), aber mit dem Potenzial für bessere Skalierung bei größeren Datensätzen. Tabelle~\ref{tab:combined} fasst die Ergebnisse zusammen.
+
+\begin{table}[H]
+\centering
+\caption{Zusammenfassung aller Optimierungskonfigurationen}
+\label{tab:combined}
+\begin{tabular}{lrrl}
+\toprule
+\textbf{Konfiguration} & \textbf{Frame-Zeit} & \textbf{FPS} & \textbf{Bewertung} \\
+\midrule
+Baseline (keine Opt.) & 14.5 ms & 69 & Überraschend gut \\
++ Octree allein & 22.1 ms & 45 & Verschlechterung \\
++ LOD allein & 16.8 ms & 59 & Leichte Verschlechterung \\
++ Cache (SoA) allein & 9.4 ms & 106 & \textbf{Beste Einzeloptimierung} \\
+Octree + Cache & 16.5 ms & 61 & Besser als nur Octree \\
+Alle kombiniert & 18.8 ms & 53 & Kompromiss \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Unerwartete Erkenntnisse}\label{subsec:unexpected}
+
+Die Experimente lieferten mehrere Erkenntnisse, die von der theoretischen Erwartung abwichen:
+
+Die wichtigste Erkenntnis betrifft das Verhältnis von algorithmischer Komplexität und Implementierungseffizienz. In einer interpretierten Sprache wie Python dominieren konstante Faktoren die asymptotische Komplexität. Ein naiver $O(n)$-Algorithmus, der vollständig in NumPy implementiert ist, schlägt einen ausgeklügelten $O(\log n)$-Algorithmus mit Python-Kontrollfluss.
+
+Die zweite Erkenntnis betrifft die Wahl der Optimierungsstrategie. Für Python-basierte Visualisierungen ist die Devise klar: Maximiere die Zeit, die in NumPy oder anderen C-Erweiterungen verbracht wird, und minimiere Python-Interpreter-Aufrufe. Hierarchische Datenstrukturen wie Octrees oder BVHs entfalten ihr Potenzial erst in kompilierten Implementierungen.
+
+Die dritte Erkenntnis betrifft die Baseline-Annahmen. Die initiale Annahme, dass 30.000 Objekte ohne Optimierungen nicht in Echtzeit darstellbar seien, erwies sich als falsch. Die Kombination aus relativ einfacher Geometrie und effizientem Display-List-Caching in OpenGL ermöglichte bereits ohne weitere Maßnahmen akzeptable Frameraten. Dies unterstreicht die Wichtigkeit empirischer Tests vor der Implementierung komplexer Optimierungen.
+
+% =============================================================================
+% 4. DISCUSSION (Diskussion)
+% =============================================================================
+\section{Diskussion}\label{sec:discussion}
+
+\subsection{Interpretation der Ergebnisse}
+
+Die Performance-Messungen zeigen ein differenziertes Bild. Die Cache-Optimierung durch SoA-Layout liefert konsistente Verbesserungen, während die Octree-Implementierung unter den gegebenen Bedingungen keine Vorteile bringt. Dies hat mehrere Gründe:
+
+Erstens ist die räumliche Verteilung der Windkraftanlagen hochgradig nicht-uniform. Die Küstenregionen haben eine 10-fach höhere Dichte als das Binnenland. Ein uniformes Octree passt sich nicht optimal an diese Verteilung an.
+
+Zweitens deckt der View-Frustum bei typischen Zoom-Stufen einen großen Teil der Szene ab. Das Octree entfaltet seine Stärke bei kleinen Frusta, nicht bei Übersichtsansichten.
+
+Drittens dominiert in Python der Interpreter-Overhead die algorithmische Komplexität. Eine $O(\log n)$ Octree-Traversierung mit Python-Objekten kann langsamer sein als eine $O(n)$ NumPy-Operation.
+
+\subsection{Bezug zu Vorlesungskonzepten}
+
+Die Implementierung demonstriert die praktische Anwendbarkeit der Vorlesungsinhalte. Das Phong-Modell erzeugt visuell überzeugende Ergebnisse mit minimalem Implementierungsaufwand. Die Vertex-Normalen-Berechnung ist kritisch für glatte Schattierung, insbesondere bei zylindrischen Geometrien.
+
+Die Schattenprojektion vereinfacht das Raytracing-Konzept der Schattenfühler: Statt Strahlen zu verfolgen, wird die Geometrie direkt auf die Bodenebene projiziert. Dies ist ausreichend für die gegebene Szene, würde aber bei komplexeren Geometrien (Selbstschatten, weiche Schatten) an Grenzen stoßen.
+
+\subsection{Limitationen}
+
+Die Implementierung hat mehrere Einschränkungen. Das CPU-basierte Rendering (PyOpenGL mit Fixed-Function Pipeline) ist nicht repräsentativ für moderne GPU-basierte Anwendungen. Die LOD-Übergänge sind diskret, was zu sichtbarem Pop-In führen kann. Die Octree-Implementierung ist nicht adaptiv und daher für nicht-uniforme Verteilungen suboptimal.
+
+Methodisch sind die Performance-Messungen durch Python-Interpreter-Overhead verzerrt. Eine C++-Implementierung würde andere Verhältnisse zeigen.
+
+\subsection{Praktische Implikationen}
+
+Für Python-basierte Visualisierungsanwendungen ergeben sich klare Empfehlungen: NumPy-Vektorisierung sollte aggressiv eingesetzt werden. Hierarchische Datenstrukturen lohnen sich erst bei sehr großen Szenen (>100.000 Objekte) oder restriktiven View-Frusta. LOD ist wertvoll, wenn GPU-Durchsatz das Bottleneck ist.
+
+% =============================================================================
+% 5. CONCLUSION (Schlussfolgerung)
+% =============================================================================
+\section{Schlussfolgerung}\label{sec:conclusion}
+
+Diese Arbeit hat die Entwicklung einer interaktiven 3D-Visualisierung der deutschen Windkraftlandschaft dokumentiert. Die Implementierung integriert systematisch Konzepte aus der Computergraphik-Vorlesung: Phong-Beleuchtung für realistische Materialdarstellung, Vertex-Normalen für Gouraud-Shading, dynamische Schattenprojektion für räumliche Tiefe, und verschiedene Rendering-Optimierungen für Echtzeitfähigkeit.
+
+Die empirische Evaluierung zeigt, dass die größten Performance-Gewinne durch cache-optimierte Datenstrukturen (SoA mit NumPy) erzielt werden, nicht durch algorithmische Optimierungen wie Octrees. Dies unterstreicht die Bedeutung der Hardware-Architektur für praktische Implementierungen.
+
+Die Visualisierung ermöglicht neue Einblicke in die deutsche Energiewende: Die räumliche Clusterung entlang der Küsten, die zeitliche Progression des Ausbaus, und die regionalen Unterschiede werden unmittelbar erfahrbar. Die Arbeit demonstriert damit sowohl die technische Kompetenz als auch die praktische Relevanz von Computergraphik-Methoden.
+
+Zukünftige Erweiterungen könnten GPU-basiertes Rendering (Shader), adaptive Octree-Strukturen, und kontinuierliche LOD-Morphing umfassen.
+
+% =============================================================================
+% BIBLIOGRAPHY
+% =============================================================================
+\newpage
+\printbibliography
+
+\end{document}

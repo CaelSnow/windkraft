@@ -1,0 +1,36 @@
+\babel@toc {ngerman}{}\relax 
+\contentsline {section}{\numberline {1}Einleitung}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Motivation und Problemstellung}{3}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Bezug zur Vorlesung}{3}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Struktur der Arbeit}{4}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Methoden}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Methodischer Überblick}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Beleuchtung und Materialdarstellung}{5}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Das Phong-Beleuchtungsmodell}{5}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Materialparameter der Windkraftanlagen}{5}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Vertex-Normalen und Gouraud-Shading}{6}{subsubsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.3}Schattenberechnung}{6}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Projektionsbasierte Schatten}{6}{subsubsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.4}Geometrieverarbeitung}{7}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Polygon-Triangulation für Bundesländer}{7}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Mesh-Generierung für Windkraftanlagen}{7}{subsubsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.5}Rendering-Optimierungen}{7}{subsection.2.5}%
+\contentsline {subsubsection}{\numberline {2.5.1}Räumliche Indizierung mit Octree}{7}{subsubsection.2.5.1}%
+\contentsline {subsubsection}{\numberline {2.5.2}Level-of-Detail Rendering}{8}{subsubsection.2.5.2}%
+\contentsline {subsubsection}{\numberline {2.5.3}Cache-Optimierung durch Structure-of-Arrays}{9}{subsubsection.2.5.3}%
+\contentsline {section}{\numberline {3}Ergebnisse}{10}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Experimentelles Setup}{10}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Visuelle Ergebnisse}{10}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Performance-Analyse}{12}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Baseline: Rendering ohne Optimierungen}{12}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Octree-basiertes Frustum-Culling: Erwartung vs. Realität}{12}{subsubsection.3.3.2}%
+\contentsline {subsubsection}{\numberline {3.3.3}Level-of-Detail: Moderate Verbesserungen}{13}{subsubsection.3.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.4}Cache-Optimierung: Der entscheidende Faktor}{13}{subsubsection.3.3.4}%
+\contentsline {subsubsection}{\numberline {3.3.5}Kombinierte Optimierungen}{14}{subsubsection.3.3.5}%
+\contentsline {subsection}{\numberline {3.4}Unerwartete Erkenntnisse}{14}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Diskussion}{15}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Interpretation der Ergebnisse}{15}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Bezug zu Vorlesungskonzepten}{15}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Limitationen}{15}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Praktische Implikationen}{15}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Schlussfolgerung}{15}{section.5}%

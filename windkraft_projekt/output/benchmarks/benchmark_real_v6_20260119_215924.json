@@ -1,0 +1,464 @@
+{
+  "version": "6.0",
+  "hardware": {
+    "hostname": "Cael_PC",
+    "os_name": "Windows 10",
+    "cpu_brand": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "cpu_cores": 8,
+    "ram_gb": 15.754016876220703,
+    "python_version": "3.11.0",
+    "numpy_version": "1.26.4",
+    "benchmark_id": "20260119_215917"
+  },
+  "tests": [
+    {
+      "name": "Quadtree Build (REAL)",
+      "category": "spatial_quadtree",
+      "mean_ms": 37.89249999972526,
+      "std_ms": 1.3481106595476489,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {
+        "nodes": 1609,
+        "leaves": 1207,
+        "turbines": 5000,
+        "max_depth": 6,
+        "avg_per_leaf": 4.142502071251036,
+        "build_time": 0.036783695220947266,
+        "query_count": 0
+      },
+      "passed": true,
+      "speedup": null,
+      "reference": "Finkel & Bentley (1974): 'Quad Trees: A Data Structure for Retrieval on Composite Keys'",
+      "implementation": "real"
+    },
+    {
+      "name": "Quadtree Query \u00b10.2 (REAL)",
+      "category": "spatial_quadtree",
+      "mean_ms": 0.11297999881207943,
+      "std_ms": 0.005281063226464454,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {
+        "frustum_size": 0.2,
+        "visible": 63
+      },
+      "passed": true,
+      "speedup": 9.103381222160992,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "Quadtree Query \u00b10.5 (REAL)",
+      "category": "spatial_quadtree",
+      "mean_ms": 0.4842200025450438,
+      "std_ms": 0.01156951375171832,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {
+        "frustum_size": 0.5,
+        "visible": 411
+      },
+      "passed": true,
+      "speedup": 3.145140619007012,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "Quadtree Query \u00b11.0 (REAL)",
+      "category": "spatial_quadtree",
+      "mean_ms": 2.217360000940971,
+      "std_ms": 0.40123907897227484,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {
+        "frustum_size": 1.0,
+        "visible": 1683
+      },
+      "passed": true,
+      "speedup": 0.726963595188289,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "Quadtree Query \u00b11.5 (REAL)",
+      "category": "spatial_quadtree",
+      "mean_ms": 5.615040005068295,
+      "std_ms": 0.5594064427748973,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {
+        "frustum_size": 1.5,
+        "visible": 3709
+      },
+      "passed": true,
+      "speedup": 0.42090528278729755,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "Quadtree Build (REAL)",
+      "category": "spatial_quadtree",
+      "mean_ms": 202.01957999670412,
+      "std_ms": 51.993814182503655,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {
+        "nodes": 5505,
+        "leaves": 4129,
+        "turbines": 15000,
+        "max_depth": 7,
+        "avg_per_leaf": 3.632840881569387,
+        "build_time": 0.1736278533935547,
+        "query_count": 0
+      },
+      "passed": true,
+      "speedup": null,
+      "reference": "Finkel & Bentley (1974): 'Quad Trees: A Data Structure for Retrieval on Composite Keys'",
+      "implementation": "real"
+    },
+    {
+      "name": "Quadtree Query \u00b10.2 (REAL)",
+      "category": "spatial_quadtree",
+      "mean_ms": 0.5101599992485717,
+      "std_ms": 0.014460790012637318,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {
+        "frustum_size": 0.2,
+        "visible": 215
+      },
+      "passed": true,
+      "speedup": 11.663007695931102,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "Quadtree Query \u00b10.5 (REAL)",
+      "category": "spatial_quadtree",
+      "mean_ms": 1.657340000383556,
+      "std_ms": 0.18799558213989492,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {
+        "frustum_size": 0.5,
+        "visible": 1292
+      },
+      "passed": true,
+      "speedup": 3.073491256474177,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "Quadtree Query \u00b11.0 (REAL)",
+      "category": "spatial_quadtree",
+      "mean_ms": 7.137240000884049,
+      "std_ms": 1.4066859773717961,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {
+        "frustum_size": 1.0,
+        "visible": 5058
+      },
+      "passed": true,
+      "speedup": 0.8892288894238679,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "Quadtree Query \u00b11.5 (REAL)",
+      "category": "spatial_quadtree",
+      "mean_ms": 13.145879996591248,
+      "std_ms": 0.35983419118204596,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {
+        "frustum_size": 1.5,
+        "visible": 11098
+      },
+      "passed": true,
+      "speedup": 0.515574461392797,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "LOD Update: Nah (0,0) (REAL)",
+      "category": "lod",
+      "mean_ms": 9.602960004121996,
+      "std_ms": 0.3838703351221147,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {
+        "lod_distribution": [
+          152,
+          807,
+          4041
+        ],
+        "polygon_reduction_percent": 80.808
+      },
+      "passed": true,
+      "speedup": null,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "LOD Update: Mitte (0.5, 0.5) (REAL)",
+      "category": "lod",
+      "mean_ms": 11.04009999835398,
+      "std_ms": 1.4254230824914416,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {
+        "lod_distribution": [
+          116,
+          828,
+          4056
+        ],
+        "polygon_reduction_percent": 81.28800000000001
+      },
+      "passed": true,
+      "speedup": null,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "LOD Update: Fern (1.2, 1.2) (REAL)",
+      "category": "lod",
+      "mean_ms": 9.25713999895379,
+      "std_ms": 0.2833245253726374,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {
+        "lod_distribution": [
+          148,
+          473,
+          4379
+        ],
+        "polygon_reduction_percent": 83.552
+      },
+      "passed": true,
+      "speedup": null,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "LOD Update: Nah (0,0) (REAL)",
+      "category": "lod",
+      "mean_ms": 26.10901999869384,
+      "std_ms": 0.22002277727746763,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {
+        "lod_distribution": [
+          383,
+          2400,
+          12217
+        ],
+        "polygon_reduction_percent": 81.30199999999999
+      },
+      "passed": true,
+      "speedup": null,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "LOD Update: Mitte (0.5, 0.5) (REAL)",
+      "category": "lod",
+      "mean_ms": 30.064619999029674,
+      "std_ms": 4.293477571321736,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {
+        "lod_distribution": [
+          428,
+          2399,
+          12173
+        ],
+        "polygon_reduction_percent": 81.03466666666667
+      },
+      "passed": true,
+      "speedup": null,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "LOD Update: Fern (1.2, 1.2) (REAL)",
+      "category": "lod",
+      "mean_ms": 29.262339998967946,
+      "std_ms": 1.4775849399971666,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {
+        "lod_distribution": [
+          385,
+          1434,
+          13181
+        ],
+        "polygon_reduction_percent": 83.866
+      },
+      "passed": true,
+      "speedup": null,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "Cache SoA vs AoS (REAL)",
+      "category": "cache_optimization",
+      "mean_ms": 0.010760000441223383,
+      "std_ms": 0.0,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {},
+      "passed": true,
+      "speedup": 191.16356054516123,
+      "reference": "Drepper (2007): 'What Every Programmer Should Know About Memory'",
+      "implementation": "real"
+    },
+    {
+      "name": "Cache SoA vs AoS (REAL)",
+      "category": "cache_optimization",
+      "mean_ms": 0.013999998918734491,
+      "std_ms": 0.0,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {},
+      "passed": true,
+      "speedup": 350.0700271476394,
+      "reference": "Drepper (2007): 'What Every Programmer Should Know About Memory'",
+      "implementation": "real"
+    },
+    {
+      "name": "SpatialGrid (REAL)",
+      "category": "spatial_grid",
+      "mean_ms": 0.03569999826140702,
+      "std_ms": 0.006860612151805209,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {
+        "cells": 304,
+        "visible": 612
+      },
+      "passed": true,
+      "speedup": null,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "SpatialGrid (REAL)",
+      "category": "spatial_grid",
+      "mean_ms": 0.08038000378292054,
+      "std_ms": 0.003520450833652732,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {
+        "cells": 304,
+        "visible": 1847
+      },
+      "passed": true,
+      "speedup": null,
+      "reference": "",
+      "implementation": "real"
+    },
+    {
+      "name": "NumPy Vectorization",
+      "category": "vectorization",
+      "mean_ms": 0.035500002559274435,
+      "std_ms": 0.0,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 5000,
+      "parameters": {},
+      "passed": true,
+      "speedup": 19.125632454884148,
+      "reference": "",
+      "implementation": "numpy"
+    },
+    {
+      "name": "NumPy Vectorization",
+      "category": "vectorization",
+      "mean_ms": 0.07433999853674322,
+      "std_ms": 0.0,
+      "min_ms": 0.0,
+      "max_ms": 0.0,
+      "samples": 5,
+      "dataset_size": 15000,
+      "parameters": {},
+      "passed": true,
+      "speedup": 27.349744934322395,
+      "reference": "",
+      "implementation": "numpy"
+    }
+  ],
+  "scientific_references": {
+    "quadtree": {
+      "source": "Finkel & Bentley (1974): 'Quad Trees: A Data Structure for Retrieval on Composite Keys'",
+      "complexity": "Build O(n log n), Query O(log n + k)",
+      "note": "2D Raumpartitionierung - teilt Raum rekursiv in 4 Quadranten (NW, NE, SW, SE)"
+    },
+    "lod": {
+      "source": "Luebke et al. (2003): 'Level of Detail for 3D Graphics'",
+      "complexity": "O(n) pro Frame",
+      "note": "Reduziert Polygon-Count basierend auf Kamera-Distanz"
+    },
+    "cache_soa": {
+      "source": "Drepper (2007): 'What Every Programmer Should Know About Memory'",
+      "complexity": "Verbesserte Cache-Lokalit\u00e4t",
+      "note": "Structure-of-Arrays Layout f\u00fcr bessere CPU-Cache Nutzung"
+    },
+    "spatial_grid": {
+      "source": "Teschner et al. (2003): 'Optimized Spatial Hashing'",
+      "complexity": "O(1) Lookup, O(n) Build",
+      "note": "Uniform Grid f\u00fcr r\u00e4umliche Abfragen"
+    },
+    "response_time": {
+      "source": "Nielsen (1993): 'Response Times: The 3 Important Limits'",
+      "thresholds": {
+        "instant": 100,
+        "flow": 1000,
+        "attention": 10000
+      },
+      "note": "<100ms wird als 'instant' wahrgenommen"
+    }
+  }
+}

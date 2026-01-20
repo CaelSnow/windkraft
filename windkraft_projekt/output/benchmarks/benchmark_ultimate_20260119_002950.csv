@@ -1,0 +1,13 @@
+Test,Metrik,Wert
+numpy_vs_python,n_1000_speedup,5.9
+numpy_vs_python,n_5000_speedup,21.7
+numpy_vs_python,n_10000_speedup,23.6
+numpy_vs_python,n_30000_speedup,33.7
+combinations,keine_optimierung_ms,29.905
+combinations,nur_octree_ms,22.261
+combinations,nur_lod_ms,39.484
+combinations,nur_cache_numpy_ms,22.912
+combinations,octree_+_lod_ms,43.259
+combinations,octree_+_cache_ms,22.467
+combinations,lod_+_cache_ms,38.679
+combinations,alle_optimierungen_ms,39.667

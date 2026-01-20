@@ -1,0 +1,6 @@
+Test,Methode,Zeit_ms,Speedup,Sichtbare_Turbinen
+Methoden,legacy,46.1207,1.00,26499
+Methoden,octree_buggy,43.1184,1.07,26499
+Methoden,octree_fixed,57.5721,0.80,26499
+Methoden,numpy_vectorized,4.9781,9.26,26499
+Methoden,hybrid,77.8207,0.59,26499

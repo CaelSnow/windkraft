@@ -1,0 +1,557 @@
+{
+  "system_info": {
+    "timestamp": "2026-01-19T00:29:08.843207",
+    "python_version": "3.11.0 (main, Oct 24 2022, 18:26:48) [MSC v.1933 64 bit (AMD64)]",
+    "platform": "Windows-10-10.0.22631-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "machine": "AMD64",
+    "cpu_name": "Intel(R) Core(TM) i7-8665U CPU @ 1.90GHz",
+    "cpu_numberofcores": "4",
+    "cpu_numberoflogicalprocessors": "8",
+    "ram_gb": 15.8,
+    "gpu": "Intel(R) UHD Graphics 620",
+    "numpy_version": "1.26.4"
+  },
+  "config": {
+    "dataset_sizes": [
+      1000,
+      5000,
+      10000,
+      30000
+    ],
+    "default_dataset_size": 30000,
+    "frustum_sizes": [
+      0.1,
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.5,
+      2.0,
+      3.0
+    ],
+    "default_frustum_size": 1.5,
+    "year_range": [
+      1990,
+      2024
+    ],
+    "test_years": [
+      1990,
+      1995,
+      2000,
+      2005,
+      2010,
+      2015,
+      2020,
+      2024
+    ],
+    "octree_max_turbines_options": [
+      4,
+      8,
+      16,
+      32,
+      64
+    ],
+    "octree_max_depth_options": [
+      5,
+      6,
+      7,
+      8,
+      10,
+      12
+    ],
+    "default_octree_max_turbines": 8,
+    "default_octree_max_depth": 10,
+    "lod_thresholds": [
+      [
+        0.2,
+        0.5,
+        1.0
+      ],
+      [
+        0.3,
+        0.6,
+        1.0
+      ],
+      [
+        0.4,
+        0.7,
+        1.0
+      ],
+      [
+        0.5,
+        0.8,
+        1.0
+      ]
+    ],
+    "camera_positions": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        -1.0,
+        -1.0
+      ],
+      [
+        1.0,
+        1.0
+      ],
+      [
+        0.0,
+        -1.5
+      ],
+      [
+        0.5,
+        0.5
+      ]
+    ],
+    "iterations": 50,
+    "warmup_iterations": 5,
+    "output_dir": "output/benchmarks",
+    "verbose": true
+  },
+  "tests": {
+    "baseline": {
+      "n_1000": {
+        "dataset_size": 1000,
+        "frustum_tests": {
+          "frustum_0.5": {
+            "mean_ms": 0.21630400013236795,
+            "std_ms": 0.021726803271703482,
+            "min_ms": 0.19609999799286015,
+            "max_ms": 0.2860999993572477,
+            "median_ms": 0.20670000048994552,
+            "p5_ms": 0.19743499924516072,
+            "p95_ms": 0.26626000035321334,
+            "iterations": 50,
+            "result_count": 99,
+            "extra": {}
+          },
+          "frustum_1.0": {
+            "mean_ms": 0.479278000202612,
+            "std_ms": 0.09274844555813963,
+            "min_ms": 0.39599999945494346,
+            "max_ms": 0.8705000000190921,
+            "median_ms": 0.45449999925040174,
+            "p5_ms": 0.40494499899068614,
+            "p95_ms": 0.6889550011692335,
+            "iterations": 50,
+            "result_count": 403,
+            "extra": {}
+          },
+          "frustum_1.5": {
+            "mean_ms": 0.8343880000029458,
+            "std_ms": 0.12176675025623457,
+            "min_ms": 0.6658000020252075,
+            "max_ms": 1.2062999994668644,
+            "median_ms": 0.7988500001374632,
+            "p5_ms": 0.7054700001390302,
+            "p95_ms": 1.1025800009520021,
+            "iterations": 50,
+            "result_count": 871,
+            "extra": {}
+          }
+        }
+      },
+      "n_5000": {
+        "dataset_size": 5000,
+        "frustum_tests": {
+          "frustum_0.5": {
+            "mean_ms": 1.0591140000178711,
+            "std_ms": 0.16969339312705053,
+            "min_ms": 0.9514000012131874,
+            "max_ms": 1.7193999992741738,
+            "median_ms": 0.9671500010881573,
+            "p5_ms": 0.9526449997792952,
+            "p95_ms": 1.3331350017324435,
+            "iterations": 50,
+            "result_count": 513,
+            "extra": {}
+          },
+          "frustum_1.0": {
+            "mean_ms": 1.8902839999645948,
+            "std_ms": 0.24952123954016153,
+            "min_ms": 1.6799000004539266,
+            "max_ms": 2.711100001761224,
+            "median_ms": 1.7879000006360002,
+            "p5_ms": 1.682065001114097,
+            "p95_ms": 2.435395000611606,
+            "iterations": 50,
+            "result_count": 2116,
+            "extra": {}
+          },
+          "frustum_1.5": {
+            "mean_ms": 2.9849160000594566,
+            "std_ms": 0.31291531732645156,
+            "min_ms": 2.666500000486849,
+            "max_ms": 4.186199999821838,
+            "median_ms": 2.8831500003434485,
+            "p5_ms": 2.7186999990590266,
+            "p95_ms": 3.6596850008208994,
+            "iterations": 50,
+            "result_count": 4410,
+            "extra": {}
+          }
+        }
+      },
+      "n_10000": {
+        "dataset_size": 10000,
+        "frustum_tests": {
+          "frustum_0.5": {
+            "mean_ms": 2.495903999879374,
+            "std_ms": 0.38225334600316696,
+            "min_ms": 2.00810000023921,
+            "max_ms": 3.6942000006092712,
+            "median_ms": 2.32990000040445,
+            "p5_ms": 2.1194450000621146,
+            "p95_ms": 3.349144999629061,
+            "iterations": 50,
+            "result_count": 1015,
+            "extra": {}
+          },
+          "frustum_1.0": {
+            "mean_ms": 4.219394000101602,
+            "std_ms": 0.40636353719439194,
+            "min_ms": 3.386500000488013,
+            "max_ms": 5.227800000284333,
+            "median_ms": 4.277249998267507,
+            "p5_ms": 3.5155199982909835,
+            "p95_ms": 4.9524000023666295,
+            "iterations": 50,
+            "result_count": 4223,
+            "extra": {}
+          },
+          "frustum_1.5": {
+            "mean_ms": 9.014433999618632,
+            "std_ms": 4.3766396342120455,
+            "min_ms": 5.973100000119302,
+            "max_ms": 24.636000001919456,
+            "median_ms": 7.4281500001234235,
+            "p5_ms": 6.322679998265812,
+            "p95_ms": 19.130404999123126,
+            "iterations": 50,
+            "result_count": 8802,
+            "extra": {}
+          }
+        }
+      },
+      "n_30000": {
+        "dataset_size": 30000,
+        "frustum_tests": {
+          "frustum_0.5": {
+            "mean_ms": 21.850031999929342,
+            "std_ms": 15.778525650952071,
+            "min_ms": 12.40210000105435,
+            "max_ms": 121.06019999919226,
+            "median_ms": 17.44564999717113,
+            "p5_ms": 12.798460001249623,
+            "p95_ms": 33.120490000692364,
+            "iterations": 50,
+            "result_count": 3072,
+            "extra": {}
+          },
+          "frustum_1.0": {
+            "mean_ms": 25.10749799963378,
+            "std_ms": 5.384861109881215,
+            "min_ms": 16.702799999620765,
+            "max_ms": 35.986399998364504,
+            "median_ms": 23.54734999971697,
+            "p5_ms": 17.925239997930476,
+            "p95_ms": 34.49061499995878,
+            "iterations": 50,
+            "result_count": 12591,
+            "extra": {}
+          },
+          "frustum_1.5": {
+            "mean_ms": 24.286455999827012,
+            "std_ms": 1.974110271209443,
+            "min_ms": 20.709999997052364,
+            "max_ms": 28.998099998716498,
+            "median_ms": 24.3425999997271,
+            "p5_ms": 21.05559500068921,
+            "p95_ms": 27.781560002767943,
+            "iterations": 50,
+            "result_count": 26499,
+            "extra": {}
+          }
+        }
+      }
+    },
+    "octree_parameters": {
+      "error": "OctreeNode.__init__() got an unexpected keyword argument 'max_depth'"
+    },
+    "octree_vs_linear": {
+      "error": "OctreeNode.__init__() got an unexpected keyword argument 'max_depth'"
+    },
+    "numpy_vs_python": {
+      "n_1000": {
+        "year_filter": {
+          "python_ms": 0.07585333357080042,
+          "numpy_ms": 0.004096666695356059,
+          "speedup": 18.515866486474724
+        },
+        "bbox_check": {
+          "python_ms": 0.08714333343959879,
+          "numpy_ms": 0.015316666637469703,
+          "speedup": 5.689445066749509
+        },
+        "distance": {
+          "python_ms": 0.7006266669729181,
+          "numpy_ms": 0.009493334194606481,
+          "speedup": 73.80195962878568
+        },
+        "combined": {
+          "python_ms": 0.09818333358756111,
+          "numpy_ms": 0.01665333341710114,
+          "speedup": 5.895716558868486,
+          "result_count": 93
+        },
+        "power_sum": {
+          "python_ms": 0.09498000023692536,
+          "numpy_ms": 0.01617666639504023,
+          "speedup": 5.871419853601374
+        }
+      },
+      "n_5000": {
+        "year_filter": {
+          "python_ms": 0.3381433336471673,
+          "numpy_ms": 0.010533333503796408,
+          "speedup": 32.102214700151116
+        },
+        "bbox_check": {
+          "python_ms": 0.5687900000339141,
+          "numpy_ms": 0.02650666598735067,
+          "speedup": 21.458375802726312
+        },
+        "distance": {
+          "python_ms": 3.042013333470095,
+          "numpy_ms": 0.014739999824087135,
+          "speedup": 206.37811192501084
+        },
+        "combined": {
+          "python_ms": 0.5020000001726052,
+          "numpy_ms": 0.02309666694297145,
+          "speedup": 21.734737804900842,
+          "result_count": 421
+        },
+        "power_sum": {
+          "python_ms": 0.3658400004496798,
+          "numpy_ms": 0.030703333201624144,
+          "speedup": 11.915318706515148
+        }
+      },
+      "n_10000": {
+        "year_filter": {
+          "python_ms": 0.7561166664042199,
+          "numpy_ms": 0.01475000050656187,
+          "speedup": 51.262145114357416
+        },
+        "bbox_check": {
+          "python_ms": 1.0206566669997603,
+          "numpy_ms": 0.033503333421928495,
+          "speedup": 30.46433183665609
+        },
+        "distance": {
+          "python_ms": 10.369106666500253,
+          "numpy_ms": 0.050196666537279576,
+          "speedup": 206.569626666333
+        },
+        "combined": {
+          "python_ms": 2.0917233334330376,
+          "numpy_ms": 0.08871999998518731,
+          "speedup": 23.576683203136515,
+          "result_count": 846
+        },
+        "power_sum": {
+          "python_ms": 1.505126666719055,
+          "numpy_ms": 0.08680333327599025,
+          "speedup": 17.3395031033373
+        }
+      },
+      "n_30000": {
+        "year_filter": {
+          "python_ms": 3.2533266666481118,
+          "numpy_ms": 0.05177333332540002,
+          "speedup": 62.83788308936308
+        },
+        "bbox_check": {
+          "python_ms": 6.255060000088027,
+          "numpy_ms": 0.14676666663338742,
+          "speedup": 42.61907791169447
+        },
+        "distance": {
+          "python_ms": 30.110943333420437,
+          "numpy_ms": 0.06507666694233194,
+          "speedup": 462.69953192445183
+        },
+        "combined": {
+          "python_ms": 4.216479999498309,
+          "numpy_ms": 0.12498333320157447,
+          "speedup": 33.73633820997496,
+          "result_count": 2453
+        },
+        "power_sum": {
+          "python_ms": 3.0561800002033124,
+          "numpy_ms": 0.23660666665819008,
+          "speedup": 12.916711280237815
+        }
+      }
+    },
+    "lod_system": {
+      "camera_positions": {
+        "cam_0.0_0.0": {
+          "camera_pos": [
+            0.0,
+            0.0
+          ],
+          "update_time_ms": 53.082049999866285,
+          "lod_distribution": {
+            "0": 898,
+            "1": 5301,
+            "2": 20300
+          },
+          "vertices_with_lod": 2973200,
+          "vertices_without_lod": 26499000,
+          "vertex_reduction": 0.8877995396052681
+        },
+        "cam_-1.0_-1.0": {
+          "camera_pos": [
+            -1.0,
+            -1.0
+          ],
+          "update_time_ms": 34.40952599979937,
+          "lod_distribution": {
+            "0": 866,
+            "1": 3464,
+            "2": 22169
+          },
+          "vertices_with_lod": 2667250,
+          "vertices_without_lod": 26499000,
+          "vertex_reduction": 0.8993452583116344
+        },
+        "cam_1.0_1.0": {
+          "camera_pos": [
+            1.0,
+            1.0
+          ],
+          "update_time_ms": 33.088625999880605,
+          "lod_distribution": {
+            "0": 953,
+            "1": 3455,
+            "2": 22091
+          },
+          "vertices_with_lod": 2748550,
+          "vertices_without_lod": 26499000,
+          "vertex_reduction": 0.8962772180082267
+        },
+        "cam_0.0_-1.5": {
+          "camera_pos": [
+            0.0,
+            -1.5
+          ],
+          "update_time_ms": 33.47580799978459,
+          "lod_distribution": {
+            "0": 447,
+            "1": 2740,
+            "2": 23312
+          },
+          "vertices_with_lod": 2160600,
+          "vertices_without_lod": 26499000,
+          "vertex_reduction": 0.9184648477301031
+        },
+        "cam_0.5_0.5": {
+          "camera_pos": [
+            0.5,
+            0.5
+          ],
+          "update_time_ms": 34.817135999692255,
+          "lod_distribution": {
+            "0": 892,
+            "1": 5503,
+            "2": 20104
+          },
+          "vertices_with_lod": 2997800,
+          "vertices_without_lod": 26499000,
+          "vertex_reduction": 0.8868712026868939
+        }
+      }
+    },
+    "scalability": {
+      "error": "OctreeNode.__init__() got an unexpected keyword argument 'max_depth'"
+    },
+    "distributions": {
+      "error": "OctreeNode.__init__() got an unexpected keyword argument 'max_depth'"
+    },
+    "combinations": {
+      "keine_optimierung": {
+        "octree": false,
+        "lod": false,
+        "cache": false,
+        "time_ms": 29.904550000355812,
+        "visible_count": 12591,
+        "speedup": 1.0
+      },
+      "nur_octree": {
+        "octree": true,
+        "lod": false,
+        "cache": false,
+        "time_ms": 22.261250000083237,
+        "visible_count": 12591,
+        "speedup": 1.3433454994775225
+      },
+      "nur_lod": {
+        "octree": false,
+        "lod": true,
+        "cache": false,
+        "time_ms": 39.483823999980814,
+        "visible_count": 12591,
+        "speedup": 0.7573873797120143
+      },
+      "nur_cache_numpy": {
+        "octree": false,
+        "lod": false,
+        "cache": true,
+        "time_ms": 22.911582000160706,
+        "visible_count": 12591,
+        "speedup": 1.3052154146381536
+      },
+      "octree_+_lod": {
+        "octree": true,
+        "lod": true,
+        "cache": false,
+        "time_ms": 43.258822000425425,
+        "visible_count": 12591,
+        "speedup": 0.6912936741564927
+      },
+      "octree_+_cache": {
+        "octree": true,
+        "lod": false,
+        "cache": true,
+        "time_ms": 22.466962000034982,
+        "visible_count": 12591,
+        "speedup": 1.331045559266502
+      },
+      "lod_+_cache": {
+        "octree": false,
+        "lod": true,
+        "cache": true,
+        "time_ms": 38.67947999991884,
+        "visible_count": 12591,
+        "speedup": 0.7731373327774458
+      },
+      "alle_optimierungen": {
+        "octree": true,
+        "lod": true,
+        "cache": true,
+        "time_ms": 39.66663400045945,
+        "visible_count": 12591,
+        "speedup": 0.7538968393438533
+      }
+    },
+    "edge_cases": {
+      "error": "OctreeNode.__init__() got an unexpected keyword argument 'max_depth'"
+    }
+  },
+  "total_runtime_seconds": 41.185808900001575
+}

@@ -1,0 +1,629 @@
+FORMENWAHRNEHMUNG
+UND REFLEXION Prof. Dr. Elke Hergenrther
+1Wichtig! Inhalte der Veranstaltung sind urheberrechtlich geschtzt. Weder die Folien 
+noch das Vorlesungsvideo drfen an unbeteiligte Dritte weitergegeben werden. 
+
+3D-Isoflchen
+ Extraktion unterschiedlicher 
+Dichte-Werte 
+Prof. Dr. Elke Hergenrther 2Bild aus: Bachelorarbeit Oberflchenextraktion mittels des Marching Cubes Algorithmus  Georg Seibt, https://www.fim.uni-
+passau.de/fileadmin/dokumente/fakultaeten/fim/lehrstuhl/sauer/geyer/BA_MA_Arbeiten/BA-SeibtGeorg-201410.pdf
+
+berblick
+3. Teil: Formenwahrnehmung und Reflexion
+Durch welche Tiefenhinweise erkennen wir dreidimensionale Formen in einem 
+zweidimensionalen Bild?
+Welche Informationen bentigt man, um Schattierungen und spiegelnde 
+Reflexionen zu berechnen?
+Wie berechnet man diffuse und spiegelnde die Reflexionen?
+Prof. Dr. Elke Hergenrther 3
+
+Wie unser Gehirn  
+Schattierungen  
+auswertet:
+Wir gehen immer davon aus, 
+dass die Lichtquelle von oben 
+auf die Geometrie scheint. 
+Daher erscheinen uns die 
+Formen rechts oben und unten 
+links eingedrckt.
+Die Formen links oben und 
+rechts unten erscheinen uns 
+nach auen gewlbt.
+Bild aus: Information 
+Visualization von Colin Ware
+Prof. Dr. Elke Hergenrther 4
+
+DEN SCHATTIERUNGS-EFFEKT KNNENSIE AUCHAN DER MITMARCHING CUBE 
+ERZEUGTENGELNDEFLCHEWAHRNEHMEN
+Prof. Dr. Elke Hergenrther
+ 5Bild von SEBASTIAN LAGUECODING ADVENTURE: MARCHING CUBES AUS
+HTTPS://WWW.YOUTUBE.COM/WATCH?V=M3II2L0LTBE
+
+DEN SCHATTIERUNGS-EFFEKT KNNEN SIE AUCH AN DER MIT MARCHING CUBE 
+ERZEUGTEN GELNDEFLCHE WAHRNEHMEN
+Prof. Dr. Elke Hergenrther
+ 6Bild von SEBASTIAN LAGUECODING ADVENTURE: MARCHING CUBES AUS
+HTTPS://WWW.YOUTUBE.COM/WATCH?V=M3II2L0LTBEBild von SEBASTIAN LAGUECODING ADVENTURE: MARCHING CUBES AUS
+HTTPS://WWW.YOUTUBE.COM/WATCH?V=M3II2L0LTBE um 180 Grad gedreht
+
+Kippbild als Fotographie
+Orginalfoto von Yutori aus https://www.fotocommunity.de/photo/kippbild-fussabdruecke-im-
+sand-yutori/15082238
+Prof. Dr. Elke Hergenrther 7
+
+Kippbild als Fotographie
+Oben das Orginalfoto von Yutori und unten das um 180 Grad gedrehte. Fotos aus 
+https://www.fotocommunity.de/photo/kippbild-fussabdruecke-im-sand-yutori/15082238
+Prof. Dr. Elke Hergenrther 8Fazit:
+Wir unterscheiden bei der Wahrnehmung von 
+Schattierungen nicht, ob die Bilder knstlich oder real 
+erzeugt wurden.
+Die Wahrnehmung bzw. das Sehen bedeutet immer 
+auch Interpretation des visuellen Eindrucks durch das 
+Gehirn.
+Die Auswertung durch das Gehirn kann nicht 
+ausgetrickst werden, auch wenn wir wissen, dass es 
+eigentlich anders ist - Beispiel Bewegungstuschung
+
+Optische Tuschung: 
+Bewegungsillusion
+Die optisch vorgetuschte 
+Bewegung kann man nicht 
+ausblenden, auch wenn 
+man wei das dies ein Bild 
+und keine Animation ist.
+Bild aus: 
+https://www.blickcheck.de/auge
+/funktion/optische-
+taeuschungen/
+Prof. Dr. Elke Hergenrther 9
+
+Monokulare Tiefenhinweise
+zur Formenwahrnehmung in 2D-Bildern
+ Schatten und Schattierung
+ Verdeckung und berlappung
+ Vertraute Gren
+ Relative Hhe und Lage zum Horizont
+ Relative Helligkeit und perspektivische Unschrfe
+ Texturdichte-Gradient
+Aus: https://www.psychologie.uni-heidelberg.de/ae/allg/lehre/wct/w/w8_konstanz/w840_helligkeitskonstanz.htm
+Prof. Dr. Elke Hergenrther 10
+
+Monokulare Tiefenhinweise
+Verdeckung und berlappung
+ Ein Indiz fr rumliche Tiefe, also Entfernung, ist 
+die Verdeckung und die berlappung,
+ Das Objekt, das nher zum Betrachter ist 
+verdeckt das dahinterliegende. 
+ Bei gleicher Gre wirkt das nher am 
+Betrachter liegende grer.
+ Fehlende Objektteile, wie meine Fe oder das 
+Tischbein, ergnzt unser Gehirn automatisch.
+Prof. Dr. Elke Hergenrther
+ 11
+
+
+Prof. Dr. Elke Hergenrther 12Monokulare Tiefenhinweise:
+Vertraute Gren
+Wenn der Betrachter wei, dass beide Objekte gleich gro 
+sind, muss das kleinere das Entferntere sein. 
+Ein weiterer Hinweis sind bekannte Gren. Wrde eine der 
+Palmen direkt neben einem Sonnenschirm stehen, knnten 
+wir abschtzen, wie gro die Palmen sind, weil wir die Gre 
+der Sonnenschirme kennen.
+Abbildung: Totes Meer
+
+Monokulare Tiefenhinweise
+Vertraute Gren
+Die Gre unbekannter Geometrien, wie 
+hier der Boxen, kann man sich vertraut 
+machen:
+  durch die perspektivische Verzerrung
+ .. durch die Nhe zu den Torbgen
+  durch das sich perspektivisch 
+verzerrende Muster auf dem Boden, 
+welches einen Grenvergleich zulsst.
+Prof. Dr. Elke Hergenrther 13Bild aus: https://www.psychologie.uni-
+heidelberg.de/ae/allg/lehre/wct/w/w6
+_raum/w620_monokulare_tk.htm
+
+Das Vertrauen in bekannte 
+Gren kann fr eine optische 
+Tuschung ausgenutzt werden.
+Scheinbar vertraute Gren, wie 
+das Zwillingsprchen und das 
+Fenster fhren zu unvereinbaren 
+visuellen Informationen.
+Da es keine Riesen und keine 
+Zwerge gibt, fragt man sich: 
+Wie ist diese optische Tuschung 
+entstanden?
+Prof. Dr. Elke Hergenrther 14Bild aus: https://www.psychologie.uni-heidelberg.de/ae/allg/lehre/wct/w/w6_raum/w620_monokulare_tk.htmMonokulare Tiefenhinweise
+Vertraute Gren
+
+Monokulare Tiefenhinweise
+Vertraute Gren
+Auflsung der optischen Tuschung:
+Der Raum indem sich die beiden Mdchen befinden, ist 
+nicht rechtwinklig. Die Decke ist unterschiedlich hoch. 
+Rechts ist sie sehr niedrig und links hoch (Abb. unten).
+Ames Raum: Basierend auf berlegungen von Hermann 
+von Helmholtz wurde der Ames-Raum 1946 von dem US-
+amerikanischen Augenarzt und Psychologen Adelbert 
+Ames(18801955) entwickelt.
+Siehe auch: 
+https://upload.wikimedia.org/wikipedia/commons/trans
+coded/1/11/Ames_room.ogv/Ames_room.ogv.480p.vp9.
+webm
+Prof. Dr. Elke Hergenrther
+ 15Bilder aus: https://www.psychologie.uni-
+heidelberg.de/ae/allg/lehre/wct/w/w6_raum/w620_monokulare_tk.htm
+
+Monokulare Tiefenhinweise
+Relative Hhe und Lage zum Horizont
+ Je nher ein Objekt zum Horizont rckt, desto 
+entfernter und kleiner wird es. 
+ Wenn der Betrachter wei, dass beide Objekte gleich 
+gro sind, muss das kleinere das entferntere sein. 
+ Fluchtlinien treffen sich in einem Fluchtpunkt.
+ Parallele verlaufende Schienen konvergieren am 
+Horizont  
+Prof. Dr. Elke Hergenrther 16
+
+Prof. Dr. Elke Hergenrther 17Monokulare Tiefenhinweise
+Weiteres Beispiel fr den Tiefenhinweis 
+Relative Hhe und Lage zum Horizont. 
+Achten Sie auf die Windlichter.Abbildung: Grabeskirche in Jerusalem
+
+Monokulare Tiefenhinweise
+Relative Helligkeit und 
+perspektivische Unschrfe
+ die Staubpartikel der Luft sorgen dafr, dass entferntere 
+Objekte weniger scharf wirken als nhere (siehe rechts). 
+ Bei Wetterlagen mit besonders klarer Luft in den Alpen 
+wirken die Berge sehr nahe. 
+Prof. Dr. Elke Hergenrther
+ 18Abbildung: Felsendom in Jerusalem
+
+Monokulare Tiefenhinweise
+Texturdichte-Gradient
+ Objekte, die in gleichem Abstand zueinander 
+stehen, wirken in der Ferne dichter gepackt. 
+ Die Steinplatten in einiger Entfernung wirken viel 
+schmaler und krzer als die, in der Nhe.
+Prof. Dr. Elke Hergenrther 19Abbildung: Soukin Jerusalem
+
+Schatten und Schattierungen liefern Informationen zur geometrischen Form und Lage
+des Objektes im Raum. Nachfolgend wollen wir weitere Informationen untersuchen, die
+ber dieGre und Entfernung desObjekteszum Betrachter informieren.
+Welche Information liefert keinenTiefenhinweis?
+a. Verdeckung oder berlappung eines Objekts 
+b. die Gre eines unbekannten Objekts
+c. die relative Hhe und Lage eines unbekannten Objekts zum Horizont 
+d. Helligkeitsnderungen im Bild und nachlassend Bildschrfe
+e. der Verlauf der Oberflchentexturierung eines unbekannten Objekts
+Prof. Dr. Elke Hergenrther 20. 
+
+Prof. Dr. Elke Hergenrther 21. Die Gre eines unbekannten Objekts 
+ist keinTiefenhinweis.
+Zur Verdeutlichung ziehen wir das Modell der Lochkamera heran:
+Bild aus Wikipedia Lochkamera: Von Der ursprnglich hochladende Benutzer war Anton in der Wikipedia auf Deutsch -bertragen aus de.wikipedia nach 
+Commons., CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=12075884
+
+Prof. Dr. Elke Hergenrther 22. Die Gre eines unbekannten Objekts 
+ist keinTiefenhinweis.
+Zur Verdeutlichung ziehen wir das Modell der Lochkamera heran:
+Bild aus Wikipedia Lochkamera: Von Der ursprnglich hochladende Benutzer war Anton in der Wikipedia auf Deutsch -bertragen aus de.wikipedia nach 
+Commons., CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=12075884
+Wenn Sie nicht wissen, wie gro 
+das Objekt, hier beispielsweise 
+die Turmspitze ist, dann knnen 
+Sie die Entfernung nicht 
+abschtzen.
+Bei einem normalen Stuhl 
+wssten Sie wie weit er entfernt 
+steht.  
+
+Fazit:
+Wichtige Techniken zur Darstellung von 
+computergrafisch generierter Geometrie sind:
+ Schatten und Schattierungen
+ perspektivische Projektion der Geometrien, der Texturen - der Szene insgesamt 
+ Verdeckungen 
+ und bei groen Szenen auch Dunst in der Entfernung
+Bild aus: https://www.volume-gfx.com/wp-content/uploads/2013/02/mcTerrain.png
+Prof. Dr. Elke Hergenrther 23
+
+berblick
+3. Teil: Formenwahrnehmung und Reflexion
+Durch welche Tiefenhinweise erkennen wir dreidimensionale Formen in einem 
+zweidimensionalen Bild?
+Welche Informationen bentigt man, um Schattierungen und spiegelnde 
+Reflexionen zu berechnen?
+Wie berechnet man diffuse und spiegelnde die Reflexionen?
+Prof. Dr. Elke Hergenrther 24
+
+Bestandteile zur Reflexionsberechnung
+Flchennormale
+Dreiecksflche oben 
+wird beleuchtet, die 
+unten nicht. 
+Lichtreflexion ist 
+abhngig von den 
+Materialeigenschaften
+
+Fr welchen Punkt des Dreiecks wird die 
+Reflexion im Allgemeinen berechnet?
+a.  fr den Dreieckspunkt bzw. den Pixel, dem die Normale zugewiesen wurde. 
+b.  immer fr einen Eckpunkt. Welcher Eckpunkt dies ist muss festgelegt werden.
+c.  beim Flatshading wird immer der Mittelpunkt des Dreiecks genommen, beim 
+Gouaud-Shading wird an allen Eckpunkten die Reflexion berechnet. 
+d.  ich bin hier raus!
+Prof. Dr. Elke Hergenrther 26
+
+Welche Materialeigenschaften gibt es?
+In der Computergrafik unterscheidet man im wesentlichen  
+zwischen zwei Materialien:
+ spiegelnde Materialien
+ diffuse Materialien
+Prof. Dr. Elke Hergenrther 27Spiegelndes MaterialDiffuses Material
+Spiegelndes Material, aber die 
+Blickrichtung des Betrachters 
+hat sich gendert
+
+Beispiele fr 
+diffuses Material 
+ Papier und gepuderte Flchen sind perfekte 
+diffuse Reflektoren
+ Auch Bltenbltter mit feiner Haarstruktur 
+zerstreuen das einfallende Licht optimal und 
+erzeugen damit krftige Farbreflexionen 
+Prof. Dr. Elke Hergenrther
+ 28
+
+Spiegelnde Reflexion & 
+Spiegelungen
+ Spiegelungen (Spiegelbilder) findet man auf ideal 
+spiegelnden Materialien, wie beispielsweis Wasser, Glas 
+oder bestimmten polierten Metallen. 
+ Spiegelnde Reflexionen entstehen auf ideal und auf nicht 
+ideal spiegelnden Materialien. 
+ Die spiegelnde Reflexion erscheint bei ideal spiegelnden 
+Materialien als Glanzpunkt (highlight) oder bei nicht ideal 
+spiegelnden Materialen als Flchen, die hnlich, wie der 
+Bloom-Effekt , berstrahlen.
+ Eine Spiegelbild ist eine Zusammensetzung von vielen, 
+sehr kleinen, lokal begrenzten Glanzpunkten, die durch 
+sekundre Lichtquellen (= spiegelnd reflektiertes Licht) 
+erzeugt werden. 
+ Erklren Sie: Warum sind Spiegelbilder farbig? 
+Glanzpunkte sind ja immer nur sehr hell, also wei, oder?
+29
+
+Exkurs: Bloom Effekt
+Als Bloom bezeichnet man den Effekt, der entsteht, wenn 
+zwei benachbarte Punkte einen sehr groen 
+Helligkeitsunterschied haben.  Das helle Licht berstrahlt 
+die Kante, so dass diese leicht verschwimmt. 
+Dieser Effekt tritt zum Beispiel bei dunklen Rumen mit 
+Fenstern auf, durch die helles Licht, wie etwa 
+Sonnenschein, fllt. Die Fensterkanten verschwimmen 
+dann scheinbar, da das Licht im Gegensatz zur Helligkeit 
+im Raum sehr hell ist und das Auge diesen 
+Helligkeitsunterschied schwer verarbeiten kann. 
+In der Rastergrafik wird der Bloom als Posteffekt 
+eingesetzt, um unsere Wahrnehmung zu simulieren.
+Prof. Dr. Elke Hergenrther
+ 30Bild und Text aus: 
+http://media2mult.uos.de/pmwiki/fields/cgp12/index.php?n=BST.Bloomeffekt 
+
+Glanzlichter 
+spiegelnde 
+Reflexionen 
+ die Ausdehnung des 
+Highlights/Glanzlichts ist 
+unterschiedlich 
+ die Gre des Glanzlichts ist 
+vom Material abhngig
+ je matter das Material, desto 
+ausgedehnter das Glanzlicht
+ nur der perfekte Spiegel 
+erzeugt ein perfektes 
+Highlight
+Prof. Dr. Elke Hergenrther 31
+
+Bild aus: https://www.dentics.de/blog/technik-cad-cam/zahnarzt-trend-cadcam/Die Reflexion von transparente und semitrans-
+parenten Materialen ist schwieriger zu berechnen
+32
+Prof. Dr. Elke Hergenrther
+
+Materialeigenschaft: 
+transparent & spiegelnd
+ Um transparente Objekte darstellen zu knnen, braucht 
+man die Information, wie die gesamte Szene geomet-
+risch aus Sicht des Betrachters (virtuelle Kamera) 
+aufgebaut ist.
+ Man muss wissen, welche Objekte vor welche anderen 
+Objekte sind. Bspw. der Whisky ist hinter dem Glas und 
+hinter dem Whisky sind die Eiswrfel. 
+ Da alle Objekte aus Dreiecken bestehen, muss man 
+letztendlich bei transparenten Objekten wissen, welche 
+Dreiecke von welchen anderen Dreiecken verdeckt 
+werden. Diese Reihenfolge ist von der Position und der 
+Blickrichtung des Betrachters abhngig.
+ Zudem muss noch die Lichtbrechung berechnet werden.
+Prof. Dr. Elke Hergenrther 33Bild von Josh Wills aus: 
+http://graphics.ucsd.edu/courses/rendering/2003/josh/
+
+Ist Schatten und Schattierung 
+eigentlich das Gleiche?
+a. Ja
+b. Nein
+Prof. Dr. Elke Hergenrther 42
+
+ES GIBT EINEN UNTERSCHIED ZWISCHEN
+SCHATTIERUNG
+UND 
+SCHATTEN
+43Bild aus: https://www.mschangart.com/drawing-and-
+painting/charcoal-drawings-of-fabricSchattenSchattierungen
+Prof. Dr. Elke Hergenrther
+
+berblick
+3. Teil: Formenwahrnehmung und Reflexion
+Durch welche Tiefenhinweise erkennen wir dreidimensionale Formen in einem 
+zweidimensionalen Bild?
+Welche Informationen bentigt man, um Schattierungen und spiegelnde 
+Reflexionen zu berechnen?
+Wie berechnet man diffuse und spiegelnde die Reflexionen?
+Prof. Dr. Elke Hergenrther 44
+
+Reflexionsgesetz
+ Fr ebene Spiegel gilt das Reflexions-
+gesetz: Jeder auftreffende Lichtstrahl 
+verlsst den Spiegel im gleichen 
+Winkel, wie er aufgetroffen ist.
+ Der Einfallswinkel aund der Reflexions-
+winkel a werden dabei ausgehend von 
+der Senkrechten des Spiegels angege-
+ben. Mathematisch lsst sich das 
+Reflexionsgesetz damit wie folgt 
+formulieren: a = a
+ Vertauscht man in der Abbildung den 
+Ort des Auges mit dem Ort der 
+Lichtquelle, so ndert sich das Ergebnis 
+nicht. 
+ Allgemein gilt in der Optik: Jeder Licht-
+strahl kann seinen Weg stets auch in 
+umgekehrter Richtung durchlaufen.
+Prof. Dr. Elke Hergenrther 45Bild aus: https://www.grund-wissen.de/physik/_images/reflexionsgesetz.pngReflexion eine Lichtstrahls am ebenen Spiegel
+Text weitestgehend bernommen aus: 
+https://www.grund-wissen.de/physik/optik/lichtreflexion.html 
+
+Spiegelnde und diffuse Reflexion in der Physik
+In der Physik spricht man von der direkte Reflexion, wenn man eine spiegelnde Reflexion
+meint:Die Reflexion von Lichtstrahlen an einem ebenen, glatten Spiegel wird direkte
+Reflexion genannt. Treffen Lichtstrahlen allerdings auf einen ebenen Spiegel mit einer
+rauen Oberflche, so spricht man von einer diffusen Reflexion: Das Licht wird, wie in der
+Abbildung unten Direkte und diffuse Reflexion (Bild in der Mitte) nach dem
+Reflexionsgesetz in verschiedene Richtungen zurckgeworfen (gestreut). (aus grund-
+wissen.de)
+Prof. Dr. Elke Hergenrther 46Bilder aus: https://www.grund-wissen.de/physik/optik/lichtreflexion.html
+Eine Disko-Kugel als 
+gewlbter Spiegel
+
+Das PhongschesReflexionsmodell beruht auf der Annahme, das jedes Material 
+nur drei Reflexionseigenschaften zu unterschiedlichen Anteilen besitzt:
+ Ambiente Reflexion (links), die die indirekte Beleuchtung annhert
+ Diffuse Reflexion (in der Mitte)
+ Spiegelnde Reflexion (rechts)
+47Reflexion eines Materials I =  Ia.ka(ambient)  +  Ie. kd(diffus)+  Ie. ks(spiegelnd)
+Mit: kd+ ks= 1 sowie kaals unabhngiger Parameter
+Prof. Dr. Elke Hergenrther
+
+Das PhongschesReflexionsmodell beruht auf der Annahme, das jedes Material 
+nur drei Reflexionseigenschaften zu unterschiedlichen Anteilen besitzt:
+ Ambiente Reflexion (links), die die indirekte Beleuchtung annhert
+ Diffuse Reflexion (in der Mitte)
+ Spiegelnde Reflexion (rechts)
+52Reflexion eines Materials I =  Ia.ka(ambient)  +  Ie. kd(diffus)+  Ie. ks(spiegelnd)
+Mit: kd+ ks= 1 sowie kaals unabhngiger Parameter
+Prof. Dr. Elke Hergenrther
+
+Ambiente Reflexion im Reflexionsmodell von Phong
+aaklI=
+IaStrahlungsstrke 
+kaBeschreibt die Menge des 
+ambient reflektierten Lichts 
+(liegt zwischen 0 und 1)Ersatz fr indirekte Beleuchtung der Objekte
+53
+Prof. Dr. Elke Hergenrther
+
+Diffuse Reflexion im Reflexionsmodell von Phong
+54Merkmal der Reflexion: Diffus reflektierende 
+Oberflchen erscheinen aus jeder Blickrichtung 
+gleich hell. 
+Helligkeit der Reflexion ist vom Winkel q
+abhngig in dem der Lichtstrahl auf die 
+Objektoberflche trifft
+IpStrahlungsstrke der Punktlichtquelle
+Ievon der Oberflche reflektierte diffuse 
+Strahlung
+qcos=peII
+Prof. Dr. Elke Hergenrther
+
+Berechnung der diffuse Reflexion
+qlnlLichteinfallsvektor
+nFlchennormale
+qLichteinfallswinkel
+Diffuse Reflexion ist alleine von q(Theta) abhngig!
+Die Blickrichtung des Betrachters spielt keine Rolle. 
+Die diffuse Reflexion eignet sich daher besonders gut 
+zur offline-Berechnung.
+qcos=peII
+55
+Prof. Dr. Elke Hergenrther
+
+Welche Aussage ist falsch?
+a. Die ambiente Beleuchtung ist eine Vereinfachung der indirekten Reflexion. Als 
+indirekte Reflexion bezeichnet man die Lichtstrahlen, die von diffus-reflektierenden 
+Oberflchen gestreut werden und den Raum aufhellen.
+b. Die Strahlungsintensitt der diffusen Reflexion ist hher, je kleiner der Winkel 
+zwischen Lichteinfallsvektor und Flchennormalen ist.
+c. Zur Berechnung der diffusen Reflexion muss man die Position des Betrachters 
+kennen.
+d. Ein diffuser Reflektor ist physikalisch gesehen nichts anderes als ein rauer Spiegel
+Prof. Dr. Elke Hergenrther 56
+
+Wirkungsweise der diffusen Reflexion
+l
+n
+q
+l
+n
+q
+Ir= I cos q
+Die Reflexion Irder bestrahlten Flche ist abhngig von der Einfallsrichtung 
+der Strahlung aber unabhngig von der Blickrichtung des Betrachters.Kugel gibt die 
+Strke der 
+Reflexion an
+57
+Prof. Dr. Elke Hergenrther
+
+Warum wird der Cosinus 
+zur Berechnung der 
+diffuse Reflexionen 
+verwendet?
+ Bei 0 Grad ist 
+die Reflexion 1 = 100%
+ Bei 90 Grad ist 
+die Reflexion 0 = 0%
+Prof. Dr. Elke Hergenrther 58
+
+Berechnung der diffusen Reflexion 
+ohne trigonometrische Funktionen
+59 Prof. Dr. Elke HergenrtherIpStrahlungsstrke der Punktlichtquelle 
+IeStrahlungsstrke, die von einem Punkt einer diffus reflektierenden Oberflche 
+reflektiert wird
+kdliegt zwischen 0 und 1 und gibt den Grad an diffuser Reflexion des 
+Oberflchenmaterials an
+qliegt zwischen 0 und 90 Grad
+Berechnung des Skalarprodukts :
+Wenn nund lnormiert sind, gilt: cos q= n ll== nkI kIIdp dpe qcos
+acos= baba
+
+Berechnung spiegelnder Reflexion
+l rn
+v
+qqa
+rist der Reflexionsvektor.
+Ein perfektes Highlight ist nur dann 
+sichtbar, wenn agleich Null ist.
+die Sichtbarkeit des Highlights wird 
+durch abestimmt
+die Gre (Verlauf) des Highlights 
+wird durch das Material bestimmt
+l= in Lichtquellenrichtung
+n= Flchennormale
+v= in Betrachterrichtung
+60Prof. Dr. Elke Hergenrther
+
+Die Ausprgung der spiegelnden 
+Reflexion ist vom Material 
+abhngig.
+Prof. Dr. Elke Hergenrther 61
+
+Berechnung der spiegelnden Reflexion
+Prof. Dr. Elke Hergenrther 62qq
+avn
+lrn= Normale
+l = Richtungsvektor einfallendes Licht
+r= Richtungsvektor reflektiertes Licht
+v= Richtungsvektor zum Betrachter
+Ispec= spiegelnd reflektierende Lichtintensitt
+)(.)cos(
+vrIIbzw II
+e spece spec
+== a
+
+Mit n kann man die 
+Glanzpunkte (Highlights) 
+unterschiedlich stark zu 
+begrenzen
+Prof. Dr. Elke Hergenrther 63n
+e specn
+e spec
+vrIIII
+)()cos(
+== an = 1 n = 10 n = 25 n = 50 n = 100
+
+DIE AUSDEHNUNG  DER 
+SPIEGELNDEN REFLEXION 
+(GLANZLICHT) ALS FUNKTION 
+DARGESTELLT
+Prof. Dr. Elke Hergenrther 64f(x) = cos a
+f(x) = cos2a= (cos a)2
+f(x) = cos8a
+f(x) = cos64a
+n
+e specn
+e spec
+vrIIbzw II
+)(.)cos(
+==a
+
+Berechnung des Reflexionsvektors r
+1. Schritt: Berechnung von l
+Prof. Dr. Elke Hergenrther 65l rn
+vqq
+al
+l' = n* cos(q) = n (n*l)
+Skalarprodukt kann nur verwendet werden, 
+weil l und n normiert sind .slr=' Idee:
+
+S & leingesetzt:Berechnung des Reflexionsvektors r
+2. Schritt: Berechnung von l
+Prof. Dr. Elke Hergenrther 66n
+l r
+v
+qqals
+-l
+ss nr = qcos
+da    s = l  l 
+l = )cos( qn2rslr=' Idee:
+ll= )(nn2rr = l + s = l + l -l
+
+Zusammenfassung des 
+Reflexionsmodells von Phong
+Prof. Dr. Elke Hergenrther 67n
+se deaa ges kI kIkII )(vr ln =
+Ambiente ReflexionDiffuse Reflexion Spiegelnde inkl. 
+brechender 
+Reflexion
+n
+se deaa ges kI kIkII )cos( cos a q =
+Ambiente ReflexionDiffuse Reflexion Spiegelnde inkl. 
+brechender 
+Reflexion
+
+COMPUTER GRAPHIK
+TEIL 3
+FORMENWAHRNEHMUNG
+UND REFLEXIONZusammenfassung:
+Tiefenhinweise
+Phongsches Reflexions-
+modell
+diffuse und spiegelnde 
+Reflexionen berechnen
+Nchste Vorlesung:
+BRDF
+Licht
+Weiterfhrende Themen
+68 Prof. Dr. Elke HergenrtherZur Erinnerung! Inhalte der Veranstaltung sind urheberrecht-
+lichgeschtzt. Weder die Folien noch das Vorlesungsvideo 
+drfen an unbeteiligte Dritte weitergegeben werden. 
+
+
+
+=== GESAMT: 20888 Zeichen ===

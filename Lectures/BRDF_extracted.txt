@@ -1,0 +1,712 @@
+COMPUTER GRAPHIK
+REFLEXIONEN: BRDFS
+Prof. Dr. Elke Hergenrther
+14. Teil
+Wichtig! Inhalte der Veranstaltung sind urheberrechtlich geschtzt. Weder die Folien 
+noch das Vorlesungsvideo drfen an unbeteiligte Dritte weitergegeben werden. 
+
+Placet:
+Platzieren von 
+Objekten in der 
+Realen Welt 
+(Koop. FB Media, 
+Projekt Fuels)
+Prof. Dr. Elke Hergenrther 2
+Andreas Sturm, Sven Appel, 
+Prof. Paul Grimm
+
+Problemstellung/Motivation
+Darstellung von virtuellen Objekten an ihrer korrekten geographischen 
+Position in einer MetaQuest AR App
+Meta Quest hat kein GPS 
+Unity Koordinatensystem richtet sich immer nach der Ausrichtung der Brille
+Fragestellung: Wie kommt man an GPS Daten, um Objekte geographisch 
+Korrekt in AR auf der MetaQuest positionieren zu knnen. 
+Lsungsansatz: Geokoordinaten von einer Handy-App auf MetaQuest 
+bertragen und Koordinatensystem auf Brille entsprechend ausrichten. 
+Prof. Dr. Elke Hergenrther 3
+
+Konzept/Methodik
+ MetaQuest Passthrough: Kameras der Brille scannt mit Passthrough/AR 
+den QR Code, welcher die Geoinformationen Enhlt. Objekt an der Stelle des 
+gescannten QR Codes wird im Unity Raum der MetaAR App erzeugt. 
+ Scan enhltGeokoordinaten inklRotation, sowie Information ber zu 
+spawnende Objekte
+ EUN Rotation: Quaternion, das die Drehung des Zielobjekts relativ zu einem 
+global festen Koordinatensystem (reale Welt) ausdrckt 
+ In Unserem Fall: Das Smartphone gegenber der Himmelsrichtungen NSWE
+Prof. Dr. Elke Hergenrther 4
+
+
+Berechnung des relativen Versatzes 
+anhand der Geolocation im QR Code
+Prof. Dr. Elke Hergenrther 5
+Quelle: https://www.codinblack.com/coordinate-spaces-and-transformations-between-them /
+
+Ausrichtung des Koordinatensystems und 
+korrekte Positionierung der virtuellen Objekte 
+ ber die Informationen des gescannten QR Codes und dessen Objekt im 
+Unity Raum knnen wir nun die Information gewinnen, in welche 
+Himmelsrichtung das Objekt zeigt (EUN Quaternion). 
+ Nach der Konvertierung der Geokoordinaten (der Rotation Real-World-
+rotation) in das Unity Koordinatensystem der Meta Quest AR App, knnen 
+wir nun die Relative Nord-Ausrichtung fr unsere Meta Quest App 
+berechnen (AzimuthAngle).
+Prof. Dr. Elke Hergenrther 6
+
+
+Video von Sven Appel zeigen 
+Prof. Dr. Elke Hergenrther 7
+
+Berechnung der Oberflchendarstellung
+Flchennormale
+Dreiecksflche oben 
+wird beleuchtet, die 
+unten nicht. 
+Lichtreflexion ist 
+abhngig von den 
+Materialeigenschaften
+
+Prof. Dr. Elke 
+Hergenrther   9Unterschiedliche Varianten von Normalen
+1. Variante: Flchennormalen
+IkosaederFlchennormale steht 
+senkrecht auf der Flche.
+
+Verwendung von Flchennormalen:
+Flat Shading
+Verfahren:
+ Fr jede Flche gibt es nur eine Normale.
+ Dadurch erhlt jede Flche (Facette) eine 
+einheitliche Beleuchtung*).
+ D.h. jede Flche besitzt nur ein Farbton
+Nachteil:
+ Da die meisten Objektoberflchen gekrmmt sind, ist die Qualitt der 
+Ergebnisse meist schlecht.
+Vorteil:
+ sehr einfache und sehr schnelle Beleuchtungsberechnung!
+*) Beleuchtung wird meist mit dem PhongschenBeleuchtungsmodell berechnet.
+
+Prof. Dr. Elke 
+Hergenrther   11Unterschiedliche Varianten von Normalen
+2. Variante: Eckennormalen
+IkosaederEckennormalen stehen 
+senkrecht auf der 
+Tangentialebene ...
+... und NICHTwie die 
+Flchennormale senkrecht auf 
+der Flche!
+
+Verwendung von Eckpunktnormalen:
+Gouraud Shading
+ Beleuchtungsberechnung *) wird fr jeden
+Eckpunkt durchgefhrt.
+ D.h. pro Dreieck werden drei unterschiedliche 
+Farben (Helligkeiten) berechnet 
+ Die Farben der Pixel innerhalb des Dreiecks 
+werden durch bilineare Interpolation berechnet
+ Dadurch entsteht eine optische Glttung ohne nderungen an der 
+Geometrie vornehmen zu mssen.
+ Optische Glttung bewirkt ein kaschieren der Kanten, die nicht zur 
+Kontur gehren!
+*) Beleuchtung wird meist mit dem PhongschenBeleuchtungsmodell berechnet.
+
+
+Flat Shading versus Gouraud Shading
+Ergebnis ist abhngig von den 
+berechneten Normalen:
+Links: Flchennormalen
+Rechts: Eckpunktnormalen
+
+Ausgangssituation im Praktikum: 
+CAD-Daten im STL-Format visualisiert mit Flat Shading
+Keine sauber 
+Kantenverlauf
+einwandfrei 
+gerenderte KanteZahnoberflchen 
+nicht glatt!!!
+
+Ergebnis nach Verwendung des Gouraud-Shadings, 
+also mit Eckpunktnormalen
+Statt einer 
+zwei 
+unsaubere 
+KantenZahnoberflchen 
+geglttet 
+
+Zusammenfassung des 
+Reflexionsmodells von Phong
+Prof. Dr. Elke Hergenrther 16n
+se deaa ges kI kIkII )(vr ln 
+Ambiente ReflexionDiffuse Reflexion Spiegelnde inkl. 
+brechender 
+Reflexion
+n
+se deaa ges kI kIkII )cos( cos   
+Ambiente ReflexionDiffuse Reflexion Spiegelnde inkl. 
+brechender 
+Reflexion
+
+Prof. Dr. Elke Hergenrther 17n = 3 n =25 n = 10 n = 5 n = 200ks= 0.1
+ks= 0.25
+ks= 0.5
+n =200
+Fr alle gilt: kd=0.45, ka=0.1 und Ia=Ie=1   entnommen aus Foley et. al .Modellierung des Materials in Phong:
+Alle Materialien bestehen aus einer Kombination von 
+spiegelnden und diffusen Eigenschaften.  
+
+KUNSTSTOFFESINDEINIDEALES
+MATERIAL ZURREFLEXIONSBE-
+RECHNUNGNACHPHONG
+Prof. Dr. Elke Hergenrther 18
+
+Die Materialien in der Realitt haben sehr unter-
+schiedliche Reflexionsverhalten:
+Prof. Dr. Elke Hergenrther 19
+Bild rechts oben: https://www.my-spexx.de/brillen-ratgeber/farb-und-stilberatung/haarfarbe-mit-brille/
+Bild links: http://www.bolidgmbh.de/index.php?id=121
+Bild rechts unten: https://www.gewerbeakademie.de/digitale-zahntechnik/%C3%BCberbetriebliche-ausbildung/zahn-6fr-keramik/
+
+Bidirectional Reflection Distribution Function
+BRDF ist eine Funktion , diefr jeden 
+Lichteinfallswinkel, die reflektierende 
+Strahlung in alle Richtungen angibt.
+u
+v
+u
+vn
+wi
+wo
+20
+Prof. Dr. Elke Hergenrther
+
+Bidirectional Reflection Distribution Function
+),(),(),,,(
+iiiooo
+iiooELBRDF 
+BRDF beschreibt das Verhltnis  der reflektierten Strahlungsdichte Lo
+zur einfallenden Bestrahlungsstrke Ei
+u
+v
+u
+vioion
+l
+vi =  Input 
+o =  Output
+Lund E: Erklrung folgt!
+Nur soviel vorweg: 
+Bestrahlungsstrke E = Energie pro Flche
+Strahlungsdichte L = Energie in eine 
+Richtung
+Prof. Dr. Elke Hergenrther 21
+
+Bild aus: http://www.gmrv.es/Publications/2019/VCGL19/vidaurre_WACV2019.pdfBidirectional Reflection Distribution Function
+wiist die Bestrahlungsstrke
+(physikalische Gre ist E), 
+welche die Energie beschreibt 
+mit der die Flche bestrahlt wird.woist die Leuchtdichte 
+(physikalische Gre ist L), 
+welche die Energie, die in die 
+Richtung des Betrachters 
+abgegeben  wird, beschreibt.
+Prof. Dr. Elke Hergenrther 22
+
+Bild aus: http://www.gmrv.es/Publications/2019/VCGL19/vidaurre_WACV2019.pdfBidirectional Reflection Distribution Function
+Was passiert, wenn ich die Metallplatte drehe? 
+Betrachter und Lichteinfall bleiben konstant.
+Prof. Dr. Elke Hergenrther 23
+
+Bild aus: http://www.gmrv.es/Publications/2019/VCGL19/vidaurre_WACV2019.pdfBidirectional Reflection Distribution Function
+Ein optisch aussagekrftiges 
+Ergebnis erhlt man, wenn man 
+statt der Metallplatte eine 
+Stoffprobe nutzt:
+Stoffprobe in der 
+Ausgangslage
+Stoffprobe 
+gedrehtBeide Materialien (Satinstoff  Bilder links und 
+angerautes Metall  Bild unten) sind anisotrop
+Prof. Dr. Elke Hergenrther 24
+
+Isotrope und anisotrope Materialien
+Definition von isotropen Materialien:
+Oberflche (in Ocker eingezeichnet) 
+kann um die Flchennormale gedreht 
+werden, ohne dass sich die BRDF 
+verndert
+Beispiel: Plastikoberflche
+Poliertes Metalln
+l
+u
+vv
+u
+virir
+Definition von anisotropen Materialien:
+ Wenn die Oberflche um die Flchennormale gedreht wird, ndert sich auch 
+die BRDF
+ Beispiele: gebrstetes Metall, Stoffgewebe (Samt, Kord, Haare) 
+Prof. Dr. Elke Hergenrther 25
+
+Die wesentlichen Eigenschaften einer BRDF:
+ Helmholtz-Reziprozitt
+Wert der BRDF ndert sich nicht, wenn man Einfalls- und Ausfallsstrahlung 
+vertauscht. Eine Energieabsorption findet also per Definition nicht statt (siehe 
+auch: https://de.qwertyu.wiki/wiki/Helmholtz_reciprocity ). Damit ist die BRDF 
+energieerhaltend.
+ BRDF misst die Reflektion an genau einer Position der Oberflche
+ Zwei Lichtstrahlen, die im gleichen Punkt auf die Oberflche auftreffen 
+beeinflussen sich nicht. 
+Prof. Dr. Elke Hergenrther 26
+
+Welche Aussage ist richtig? 
+a. BRDFs sind Funktionen, die fr jede Blickrichtung des Betrachters und jeden 
+Lichteinfallswinkel in der positiven Hemisphre einen Reflexionswert zurck geben.
+b. BRDF = Bidirectional Reflection Diffusion Function
+c. BRDF kann die Reflexion semitransparenten Materialien, wie Haut oder milchiges 
+Glas beschreiben.  
+Prof. Dr. Elke Hergenrther 27
+
+Prof. Dr. Elke Hergenrther 28Um die BRDF integrieren zu knnen, muss die 
+PhongscheReflexionsgleichung angepasst werden
+n
+se deaa ges kI kIkII )(vr ln 
+Ambiente ReflexionDiffuse Reflexion Spiegelnde inkl. 
+brechender 
+Reflexion
+n
+se deaa ges kI kIkII )cos( cos   
+Ambiente ReflexionDiffuse Reflexion Spiegelnde inkl. 
+brechender 
+Reflexion
+
+Prof. Dr. Elke Hergenrther 29n
+se deaa ges kI kIkII )(vr ln 
+Ambiente ReflexionDiffuse Reflexion Spiegelnde inkl. 
+brechender 
+Reflexion
+Die Energie, die bei Phongals Strahlungsstrke bzw. Strahlungs-
+intensitt  ( Symbol: I ) beschrieben wurde, muss nun umformuliert 
+werden und auf den Gren Leuchtdichte (Symbol L) und 
+Bestrahlstrke(Symbol E) aufbauen.
+Ergebnis der Umformulierung ist die Rendering Gleichung  Um die BRDF integrieren zu knnen, muss die 
+PhongscheReflexionsgleichung angepasst werden
+
+Rendering Gleichung nach Jim Kaija
+Lr(x,w) : Reflektierte Strahldichte zum Betrachter am Punkt x 
+Le(x,w) : Selbstleuchtende Strahldichte zum Betrachter am Punkt x 
+fr(x,w,w') : Bidirektionale Reflexion Distribution Funktion am Punkt x 
+Li(x,w')(w n) : Einfallende Strahldichte am Punkt x proportional zum Cosinus vom Winkel zw. n und w' (=w n) 
+n : Normale am Punkt x 
+w : normalisierter Vektor vom Punkt x zum Betrachter 
+w' : normalisierter Vektor vom Punkt x zum einfallenden Licht 
+Die Rendering Gleichung gibt es in verschiedenen Varianten.
+Die physikalischen Gren I, L, E etc. mssen noch erklrt werden!
+Formel aus:  https://www.inf.tu-dresden.de/content/institutes/smt/cg/teaching/lectures/CG3WS0203/secure/renderGleichung_script.pdf
+Prof. Dr. Elke Hergenrther 30
+
+Wie ermittelt man die Bidirektionale 
+Reflexionsverteilungsfunktion BRDF?
+ Per Gonioreflektor(speichern als Look Up Tables)
+ Mittels Texturinformation (BTF)
+ Analytisch
+Also: mathematische Beschreibung der Funktion
+Beispiel: Reflexionsmodell von Cook und Torrance
+Prof. Dr. Elke Hergenrther 31
+
+Zwei unterschiedlich gebaute Gonioreflektometer, 
+die beide die BRDF von realen Materialien messen
+Bidirectional Reflection Distribution Function
+Prof. Dr. Elke Hergenrther 32
+
+Die BRDF ist ein 3-dimensionales Ergebnis einer 
+Funktionsberechnung oder einer Messung 
+Unten sehen sie die Visualisierung einer 
+MessungBidirectional Reflection Distribution Function
+Design, Calibration and Evaluation of a Camera-based Gonioreflectometer von Andreas Winkler 
+https://www.jku.at/en/institute-for-measurement-technology/research/phd-projects/design-calibration-and-evaluation-of-a-camera-based-gonioreflectometer /
+Prof. Dr. Elke Hergenrther 33
+
+Roboter gesttzte 
+Reflexionsmessung
+Prof. Dr. Elke Hergenrther 34Bild aus: 
+https://www.iosb.fraunhofer.de/servlet/is/68794/BRDF_de.
+pdf?command=downloadContent&filename=BRDF_de.pdf
+
+Diverse Materialproben fr 
+die Roboter gesttzte 
+Reflexionsberechnung
+Prof. Dr. Elke Hergenrther 35Bilder  aus: 
+https://www.iosb.fraunhofer.de/servlet/is/68794/BRDF_de.pdf?command=downloadContent&filename=BRDF_de.pdf
+
+Wie ermittelt man die Bidirektionale 
+Reflexionsverteilungsfunktion BRDF?
+ Per Gonioreflektor(speichern als Look Up Tables)
+ Mittels Texturinformation (BTF)
+ Analytisch
+Also: mathematische Beschreibung der Funktion
+Beispiel: Reflexionsmodell von Cook und Torrance
+Prof. Dr. Elke Hergenrther 36
+
+BTF (bidirectionaltexture function )
+Aus: Mirko Sattler, Ralf Sarletteand Reinhard Klein:  EfcientandRealisticVisualizationof Cloth, 
+Eurographics Symposium on Rendering 2003
+Linkes Bild: BTF  Rechtes Bild: normale Textur
+Prof. Dr. Elke Hergenrther 37Beispiel Video: Hase eingehllt in Strick: https://www.youtube.com/watch?v=Vu9eHbhzlwU
+
+BTF (bidirectional texture function )
+Bilder aus: https://cg.cs.uni-bonn.de/en/publications/paper-
+details/ruiters-2013-btfinterpolation/
+Zugehriges Paper: Example-based Interpolation and 
+Synthesis of Bidirectional Texture Functions von Roland 
+Ruiters, Christopher Schwartz and Reinhard Klein 
+(https://cg.cs.uni-bonn.de/aigaion2root/attachments/eg2013-btf-interpolation.pdf )
+Weitere Paper: https://cg.cs.uni-bonn.de/de/projekte/btfdbb/
+Prof. Dr. Elke Hergenrther 382013
+
+Wie berechnet man das ?
+GPU Gems 2 Chapter 11. Approximate Bidirectional Texture 
+Functions von Jan Kautz, MassachusettsInstituteof Technology
+ Bilder und Anleitung: 
+https://developer.nvidia.com/gpugems/gpugems2/part-ii-shading-
+lighting-and-shadows/chapter-11-approximate-bidirectional-texture
+Prof. Dr. Elke Hergenrther 392004
+
+Welche Aussage passt 
+nichtzur BTF?
+a. eignet sich zur Visualisierung von Stoffen und Leder
+b. kann durch ein Gonioreflektor erstellt werden
+c. Kann zur Rekonstruktion der Textur eines eingescannten 
+Objekts aus einem Material (Bsp. Keltenfrst aus 
+Sandstein), welches in unterschiedlich beleuchteten 
+Szenen integriert werden soll, genutzt werden
+d. alle passen
+Prof. Dr. Elke Hergenrther 40Bild aus: https://www.archaeologie-online.de/nachrichten/keltische-grabfunde-vom-glauberg-
+sind-national-wertvolle-kulturgueter-1976 /
+
+Wie ermittelt man die Bidirektionale 
+Reflexionsverteilungsfunktion BRDF?
+ Per Genioreflektor(speichern als Look Up Tables)
+ Mittels Texturinformation (BTF)
+ Analytisch
+Also: mathematische Beschreibung der Funktion
+Beispiel: Reflexionsmodell von Cook und Torrance
+Prof. Dr. Elke Hergenrther 41
+
+Berechnung der spiegelnden Reflexion
+Prof. Dr. Elke Hergenrther 42
+vn
+lrn= Normale
+l = Richtungsvektor einfallendes Licht
+r= Richtungsvektor reflektiertes Licht
+v= Richtungsvektor zum Betrachter
+Ispec= spiegelnd reflektierende Lichtintensitt
+)(.)cos(
+vrIIbzw II
+e spece spec
+ 
+
+Mit n kann man die 
+Glanzpunkte (Highlights) 
+unterschiedlich stark zu 
+begrenzen
+Prof. Dr. Elke Hergenrther 43n
+e specn
+e spec
+vrIIII
+)()cos(
+ n = 1 n = 10 n = 25 n = 50 n = 100
+
+DIE AUSDEHNUNG  DER 
+SPIEGELNDEN REFLEXION 
+(GLANZLICHT) ALS FUNKTION 
+DARGESTELLT
+Prof. Dr. Elke Hergenrther 44f(x) = cos 
+f(x) = cos2= (cos )2
+f(x) = cos8
+f(x) = cos64
+n
+e specn
+e spec
+vrIIbzw II
+)(.)cos(
+
+
+Berechnung des Reflexionsvektors r
+1. Schritt: Berechnung von l
+Prof. Dr. Elke Hergenrther 45l rn
+v
+l
+l' = n* cos() = n (n*l)
+Skalarprodukt kann nur verwendet werden, 
+weil l und n normiert sind .slr' Idee:
+
+S & leingesetzt:Berechnung des Reflexionsvektors r
+2. Schritt: Berechnung von l
+Prof. Dr. Elke Hergenrther 46n
+l r
+v
+ls
+-l
+ss nr  cos
+da    s = l  l 
+l  )cos( n2rslr' Idee:
+ll )(nn2rr = l + s = l + l -l
+
+Alternative Formulierung der spiegelnden 
+Reflexion: half way Vektor
+Prof. Dr. Elke Hergenrther 47
+vn
+l r
+bh  Liegt auf der Hlfte des 
+Winkels zwischen vund l
+ Die Winkel undbsind nicht 
+gleich
+ berechneten Schattierungen 
+sind daher auch nicht gleich 
+n
+n n
+
+
+
+
+
+
+
+
+vlvlnhn)( cosb
+
+Alternative Formulierung der spiegelnden 
+Reflexion: half way Vektor
+Prof. Dr. Elke Hergenrther 48
+vn
+l r
+bh
+n
+n n
+
+
+
+
+
+
+
+
+vlvlnhn)( cosb
+n n nv)l)l)(n(2nvr )(cosDas ist kein physikalisches Modell 
+sondern ein empirisches. Phong ist 
+auch nicht physikalisch korrekt!
+
+Prof. Dr. Elke Hergenrther 49Alternative Formulierung der 
+spiegelnden Reflexion: half way Vektor
+
+Alternative Formulierung der spiegelnden 
+Reflexion: half way Vektor
+Prof. Dr. Elke Hergenrther 50h= half way Vektor
+ Liegt auf der Hlfte des 
+Winkels zwischen vund l
+ Umformulierung von cos( 
+ng Formulierue alternativ IIPhongnach II
+n
+e specn
+e spec
+)cos()cos(
+b
+
+vn
+l r
+bh
+
+Reflexionsmodell von Cook und Torrance 1981
+Analytische Beschreibung der spiegelnden Reflexion
+Modellidee: 
+ Lichtstrahl wird an einer aus Microfacetten bestehenden Oberflche reflektiert.
+ Streuung der spiegelnden Reflexion entsteht durch die unterschiedliche 
+Orientierung der Microfacetten. 
+Microfacetten
+ein PixelLichteinfallsvektor lVektor zum 
+Betrachter vDurch-
+schnittliche 
+Normale
+Prof. Dr. Elke Hergenrther 51
+
+Prof. Dr. Elke Hergenrther 52
+
+FRESNEL-EFFEKT
+Prof. Dr. Elke Hergenrther 53
+
+Lichtbrechung (specular refraction)
+ Lichtstrahl trifft auf die Grenzflche zweier verschiedener Medien 
+(etwa Luft und Wasser) 
+ Teil der Lichtenergie wird reflektiert und der andere Teil geht durch 
+die Grenzflche in das zweite Medium ber
+ dabei ndert sich die Ausbreitungsrichtung des Strahls 
+ Die Fresnel-Formel gibt nun das Verhltnis von der reflektierenden 
+und transmittierenden im Verhltnis zur einfallenden Strahlung an.
+Luft
+Wasser
+Prof. Dr. Elke Hergenrther 54
+
+Das Brechungsgesetz wurde 1621 auf experimentellen Weg von 
+hollndischen Physiker WillebrodSnelliusentdeckt.
+Gesetz von Snellius[5]:
+2 21 1  sin sin mit 1,, 2= Brechungszahl
+Luft: 1
+Wasser: 21
+2Normale der GrenzschichtLichtbrechung (specular refraction)
+Prof. Dr. Elke Hergenrther 55
+
+Gesetz von Snellius [5]:
+2 21 1  sin sin mit 1,, 2= Brechungszahl
+Luft: 1
+Wasser: 212Luft: 1
+Wasser: 21
+2n
+nwenn1< 2
+wenn1< 2Brechung hinzur 
+Normalenachse (s. Abb.)
+Brechung wegvon der 
+Normalenachse (s. Abb.)Lichtbrechung (specular refraction)
+Prof. Dr. Elke Hergenrther 56
+
+Einige Brechzahlen:
+Medium Brechzahl
+Vakuum 1,0
+Luft 1,00029
+Eis 1,31
+Wasser (20oC) 1,33
+Glass 1,5  1,6
+Saphir 1,77
+Diamant 2,42Lichtbrechung (specular refraction)
+Prof. Dr. Elke Hergenrther 57
+
+Beim bergang vom dichteren ins optisch dnnere Medium wird ein (kleiner) Teil des 
+Lichtstrahles zurck ins dichtere Medium reflektiert.
+Wenn 2grer gleich 90oist, wird der Lichtstrahl nicht mehr gebrochen sondern total reflektiert.
+Dieses Phnomen tritt zum ersten Mal auf, wenn 2genau 45ohat.
+Je nach Medium hat der Winkel 1dann einen bestimmten Gre:
+Diesen Winkel nennt man Brewster Winkel:Luft: 1
+Wasser: 212n
+Brechung wegvon 
+der Normalen12n
+tt
+r r
+Fr den Brewster Winkel bgilt:  1sin b= 2sin p/2Lichtbrechung (specular refraction)
+Prof. Dr. Elke Hergenrther 58
+
+Lichtbrechung
+(specular refraction)
+Totalreflexion aus: 
+http//vorsam.uni-
+ulm.de/ASP/OArchiv_Images.asp?OrdnungsNr=
+O%2D068
+Prof. Dr. Elke Hergenrther 59
+
+Ergebnisbilder von Cook und Torrance 1981 [6]:
+Prof. Dr. Elke Hergenrther 60
+
+Analytische Berechnung von Metall 
+in Houdini von Jarrod Hasenjager
+https://www.behance.net/gallery/35636521/Material-Studies-Metals
+Prof. Dr. Elke Hergenrther 61
+
+Analytische Berechnung von Metall 
+in Houdini von Jarrod Hasenjager
+https://www.behance.net/gallery/35636521/Material-Studies-Metals
+62
+ Prof. Dr. Elke Hergenrther 62
+
+Analytische Berechnung von Metall 
+in Houdini von Jarrod Hasenjager
+https://www.behance.net/gallery/35636521/Material-Studies-Metals
+Prof. Dr. Elke Hergenrther 63
+
+Analytische Berechnung von Metall 
+in Houdini von Jarrod Hasenjager
+https://www.behance.net/gallery/35636521/Material-Studies-Metals
+64
+ Prof. Dr. Elke Hergenrther 64
+
+Analytische Berechnung von Metall 
+in Houdini von Jarrod Hasenjager
+https://www.behance.net/gallery/35636521/Material-Studies-Metals
+65
+ Prof. Dr. Elke Hergenrther 65
+
+Analytische Berechnung von Metall 
+in Houdini von Jarrod Hasenjager
+https://www.behance.net/gallery/35636521/Material-Studies-Metals
+66
+ Prof. Dr. Elke Hergenrther 66
+
+Analytische Berechnung von Metall 
+in Houdini von Jarrod Hasenjager
+https://www.behance.net/gallery/35636521/Material-Studies-Metals
+67
+ Prof. Dr. Elke Hergenrther 67
+
+Bild aus: 
+https://www.dentics.de/blog/tec
+hnik-cad-cam/zahnarzt-trend-
+cadcam/Eignet sich eine BRDF zur Visualisierung von Zhnen?
+Aus: https://www.zwp-
+online.info/fachgebiete/endodontologie/ko
+mplikationsmanagement/schmelzinfraktur-
+am-frontzahn-als-zufallsbefundZhne sind 
+semitransparent
+Prof. Dr. Elke Hergenrther 68
+
+BSSRDF 
+(Bidirectional Scattering
+Surface Reflectance
+Distribution Function)
+Im Gegensatz zur BRDF ist bei 
+der BSSRDF der Auftreffpunkt 
+des Lichtes und der 
+Ausgangspunkt der Reflexion 
+nichtidentisch!
+Beispielmaterialien: Marmor, 
+Haut
+Der einfallende Lichtstrahl wird im Material gestreut.
+Prof. Dr. Elke Hergenrther 69
+
+Modeling and Rendering ofTranslucentMaterials 
+Investigators: Michael Goesele , Hendrik P. A. Lensch , Jochen Lang , Christian Fuchs , 
+and TongboChen
+Photographien Gerendert
+Pferd aus 
+AlabasterBeispiele fr BSSRDF
+Prof. Dr. Elke Hergenrther 70
+
+Computing the Scattering Properties of Participating 
+Media using Lorenz-Mie Theory
+Jeppe Revall Frisvad
+Niels Jrgen Christensen
+Technical University of Denmark
+Henrik Wann Jensen
+University of California, San DiegoBeispiele fr BSSRDF
+Prof. Dr. Elke Hergenrther 71
+
+EIGENTLICHKOMMTDIE 
+LORENZ-MIE-STREUUNG
+BEI DER BERECHNUNG
+DER HIMMELSFRBUNG
+ZURANWENDUNG:
+https://upload.wikimedia.org/wikipedia/commo
+ns/thumb/a/a6/Knysnasunset.jpg/640px-
+Knysnasunset.jpg
+72
+
+Literatur:
+1. M. Pharr, G. Humpherys:  Physically Based Rendering , Morgan Kaufmann Verlag, 
+2004
+2. J. Foley, A. van Dam, St. Feiner and J. Hughes: Computer Graphics: Principles and
+Practice , 2nd Ed.,Addison-Wesley, 1990 
+3. P. Dutre, K. Bala, P. Bekaert: AdvancedGobal Illumination, 2nd Ed., A K Peters, 
+2006
+4. H. W. Jensen:  Realistic Image Synthesis UsingPhoton Mapping , A K Peters, 2001
+5. P. Tipler:  Physik, Spektrum Akademischer Verlag, 1998
+6. R. L. Cook and K. E. Torrance A Reflectance Model forComputer Graphics, 1981
+
+
+
+=== GESAMT: 21140 Zeichen ===

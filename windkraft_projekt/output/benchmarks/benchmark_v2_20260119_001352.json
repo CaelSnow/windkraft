@@ -1,0 +1,297 @@
+{
+  "system_info": {
+    "timestamp": "2026-01-19T00:12:31.002340",
+    "python_version": "3.11.0 (main, Oct 24 2022, 18:26:48) [MSC v.1933 64 bit (AMD64)]",
+    "platform": "Windows-10-10.0.22631-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "machine": "AMD64",
+    "cpu_name": "Intel(R) Core(TM) i7-8665U CPU @ 1.90GHz",
+    "cpu_numberofcores": "4",
+    "cpu_numberoflogicalprocessors": "8",
+    "ram_gb": 15.8,
+    "numpy_version": "1.26.4"
+  },
+  "dataset": {
+    "total_turbines": 30000,
+    "years_range": [
+      1990,
+      2024
+    ]
+  },
+  "bug_octree": {
+    "test": "octree_year_filter_bug",
+    "requested_max_year": 2000,
+    "legacy_count": 8259,
+    "legacy_max_year_found": 2000,
+    "octree_count": 8259,
+    "octree_max_year_found": 2000,
+    "bug_detected": false,
+    "bug_description": "Kein Bug (oder Dataset hat keine neueren Turbinen)"
+  },
+  "bug_lod": {
+    "test": "lod_not_set_bug",
+    "visible_count": 26499,
+    "sample_size": 100,
+    "lod_before_update": {
+      "0": 100
+    },
+    "lod_after_update": {
+      "2": 70,
+      "1": 27,
+      "0": 3
+    },
+    "bug_detected": true,
+    "bug_description": "LOD-Level werden nicht gesetzt bei get_visible_turbines_until_year()"
+  },
+  "methods": {
+    "legacy": {
+      "mean_ms": 46.12066200013942,
+      "std_ms": 9.720321771255223,
+      "min_ms": 35.72410000197124,
+      "max_ms": 82.5224000000162,
+      "median_ms": 43.11670000060985,
+      "p95_ms": 65.8035150014257,
+      "iterations": 100,
+      "result_count": 26499,
+      "speedup": 1.0
+    },
+    "octree_buggy": {
+      "mean_ms": 43.118425000066054,
+      "std_ms": 9.287985184667082,
+      "min_ms": 35.26200000123936,
+      "max_ms": 95.62480000022333,
+      "median_ms": 39.97134999917762,
+      "p95_ms": 59.098564999658265,
+      "iterations": 100,
+      "result_count": 26499,
+      "speedup": 1.0696277055590218
+    },
+    "octree_fixed": {
+      "mean_ms": 57.57214800007205,
+      "std_ms": 16.9667302907342,
+      "min_ms": 38.691099998686695,
+      "max_ms": 113.01459999958752,
+      "median_ms": 53.57209999965562,
+      "p95_ms": 97.85490999893227,
+      "iterations": 100,
+      "result_count": 26499,
+      "speedup": 0.8010932994906096
+    },
+    "numpy_vectorized": {
+      "mean_ms": 4.978127999893331,
+      "std_ms": 0.9123530207695209,
+      "min_ms": 4.031499996926868,
+      "max_ms": 9.006300002511125,
+      "median_ms": 4.867499999818392,
+      "p95_ms": 6.520904999706544,
+      "iterations": 100,
+      "result_count": 26499,
+      "speedup": 9.264659727738552
+    },
+    "hybrid": {
+      "mean_ms": 77.82073299975309,
+      "std_ms": 23.346529333906744,
+      "min_ms": 51.015700002608355,
+      "max_ms": 174.9987000002875,
+      "median_ms": 71.75465000000258,
+      "p95_ms": 137.02819000209274,
+      "iterations": 100,
+      "result_count": 26499,
+      "speedup": 0.5926526289631036
+    }
+  },
+  "frustum_sizes": {
+    "size_0.5": {
+      "frustum_size": 0.5,
+      "visible_turbines": 3072,
+      "legacy_ms": 22.730653999824426,
+      "numpy_ms": 1.3400899997941451,
+      "speedup": 16.96203538815762
+    },
+    "size_1.0": {
+      "frustum_size": 1.0,
+      "visible_turbines": 12591,
+      "legacy_ms": 39.07028000037826,
+      "numpy_ms": 3.758711999980733,
+      "speedup": 10.3945926159223
+    },
+    "size_1.5": {
+      "frustum_size": 1.5,
+      "visible_turbines": 26499,
+      "legacy_ms": 45.23386000037135,
+      "numpy_ms": 3.914475999918068,
+      "speedup": 11.555533870004087
+    },
+    "size_2.0": {
+      "frustum_size": 2.0,
+      "visible_turbines": 30000,
+      "legacy_ms": 59.17687199973443,
+      "numpy_ms": 13.773776000307407,
+      "speedup": 4.296343428150255
+    },
+    "size_3.0": {
+      "frustum_size": 3.0,
+      "visible_turbines": 30000,
+      "legacy_ms": 59.27292400003353,
+      "numpy_ms": 6.82546399992134,
+      "speedup": 8.684087118577818
+    }
+  },
+  "year_ranges": {
+    "year_1990": {
+      "max_year": 1990,
+      "visible_turbines": 745,
+      "legacy_ms": 1.3056500000675442,
+      "numpy_ms": 0.34600200022396166,
+      "speedup": 3.7735330987173987
+    },
+    "year_2000": {
+      "max_year": 2000,
+      "visible_turbines": 8259,
+      "legacy_ms": 17.445263999834424,
+      "numpy_ms": 1.6805460001341999,
+      "speedup": 10.380711981963799
+    },
+    "year_2010": {
+      "max_year": 2010,
+      "visible_turbines": 15943,
+      "legacy_ms": 25.001419999680365,
+      "numpy_ms": 2.6737759999377886,
+      "speedup": 9.350603790393093
+    },
+    "year_2015": {
+      "max_year": 2015,
+      "visible_turbines": 19763,
+      "legacy_ms": 42.27937000025122,
+      "numpy_ms": 5.7275560001289705,
+      "speedup": 7.381747118543964
+    },
+    "year_2020": {
+      "max_year": 2020,
+      "visible_turbines": 23562,
+      "legacy_ms": 62.83947200041439,
+      "numpy_ms": 5.4058880003140075,
+      "speedup": 11.62426450506638
+    },
+    "year_2024": {
+      "max_year": 2024,
+      "visible_turbines": 26499,
+      "legacy_ms": 51.14070600051491,
+      "numpy_ms": 4.972865999588976,
+      "speedup": 10.283950141576682
+    }
+  },
+  "numpy_vs_python": {
+    "n_1000": {
+      "dataset_size": 1000,
+      "python_ms": 6.013865000386431,
+      "numpy_ms": 0.03799499991146149,
+      "speedup": 158.28043201474784,
+      "result_count": 105
+    },
+    "n_5000": {
+      "dataset_size": 5000,
+      "python_ms": 23.737290000462963,
+      "numpy_ms": 0.06590000048163347,
+      "speedup": 360.20166657022435,
+      "result_count": 492
+    },
+    "n_10000": {
+      "dataset_size": 10000,
+      "python_ms": 46.68092499996419,
+      "numpy_ms": 0.08211999993363861,
+      "speedup": 568.4476989489426,
+      "result_count": 1035
+    },
+    "n_30000": {
+      "dataset_size": 30000,
+      "python_ms": 133.73430999999982,
+      "numpy_ms": 0.19193000025552465,
+      "speedup": 696.7869005468327,
+      "result_count": 2953
+    },
+    "n_50000": {
+      "dataset_size": 50000,
+      "python_ms": 260.3734450001866,
+      "numpy_ms": 0.354834999779996,
+      "speedup": 733.7873805053695,
+      "result_count": 4988
+    }
+  },
+  "octree_vs_linear": {
+    "frustum_0.1": {
+      "frustum_size": 0.1,
+      "visible_count": 133,
+      "visible_ratio": 0.004433333333333333,
+      "octree_ms": 0.42775200003234204,
+      "linear_ms": 6.78500600028201,
+      "speedup": 15.862008827004901
+    },
+    "frustum_0.25": {
+      "frustum_size": 0.25,
+      "visible_count": 768,
+      "visible_ratio": 0.0256,
+      "octree_ms": 2.0569299998896895,
+      "linear_ms": 5.067582000119728,
+      "speedup": 2.4636628375255825
+    },
+    "frustum_0.5": {
+      "frustum_size": 0.5,
+      "visible_count": 3216,
+      "visible_ratio": 0.1072,
+      "octree_ms": 6.335183999763103,
+      "linear_ms": 4.905681999880471,
+      "speedup": 0.7743550937216526
+    },
+    "frustum_1.0": {
+      "frustum_size": 1.0,
+      "visible_count": 13367,
+      "visible_ratio": 0.44556666666666667,
+      "octree_ms": 22.472437999749673,
+      "linear_ms": 7.1959680001600645,
+      "speedup": 0.3202130538858411
+    },
+    "frustum_1.5": {
+      "frustum_size": 1.5,
+      "visible_count": 30000,
+      "visible_ratio": 1.0,
+      "octree_ms": 54.1292379998049,
+      "linear_ms": 7.040524000258301,
+      "speedup": 0.13006878094762164
+    },
+    "frustum_2.0": {
+      "frustum_size": 2.0,
+      "visible_count": 30000,
+      "visible_ratio": 1.0,
+      "octree_ms": 37.000668000328005,
+      "linear_ms": 5.5540699998528,
+      "speedup": 0.15010728994956427
+    },
+    "frustum_3.0": {
+      "frustum_size": 3.0,
+      "visible_count": 30000,
+      "visible_ratio": 1.0,
+      "octree_ms": 51.97423399964464,
+      "linear_ms": 12.17223199979344,
+      "speedup": 0.23419742943929994
+    },
+    "build_time_ms": 698.9590000011958,
+    "octree_stats": {
+      "nodes": 12209,
+      "leaves": 9157,
+      "turbines": 30000,
+      "max_depth": 8,
+      "avg_per_leaf": 3.2761821557278585
+    }
+  },
+  "lod": {
+    "turbine_count": 26499,
+    "lod_update_ms": 58.08683999995992,
+    "lod_distribution": {
+      "0": 898,
+      "1": 5301,
+      "2": 20300
+    },
+    "avg_per_turbine_us": 2.1920389448643314
+  }
+}

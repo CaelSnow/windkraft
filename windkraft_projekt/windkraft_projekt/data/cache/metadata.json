@@ -1,0 +1,16 @@
+{
+  "created": null,
+  "bundeslaender": {
+    "saved": true,
+    "timestamp": "2026-01-20T00:35:49.597783",
+    "count": 16,
+    "size_bytes": 3107397
+  },
+  "windmills": {
+    "saved": true,
+    "timestamp": "2026-01-20T00:36:20.848543",
+    "count": 29722,
+    "size_bytes": 1695506
+  },
+  "cache_version": "1.0"
+}
